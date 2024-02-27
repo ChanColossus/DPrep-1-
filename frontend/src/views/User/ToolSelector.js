@@ -131,7 +131,7 @@ const InteractiveTool = () => {
   return (
     <>
     <ThemeProvider theme={showCustomTheme ? LPtheme : defaultTheme}>
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '70vh' }}> 
         <CssBaseline />
         <AppAppBar mode={mode} toggleColorMode={toggleColorMode} />
         <Box border={1} borderRadius={4} p={2} m={2}>
