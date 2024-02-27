@@ -82,7 +82,7 @@ const InteractiveTool = () => {
 
     // Deduct points for selecting more wrong answers
     let calculatedCorrectAnswers = correctAnswers;
-    if (incorrectAnswers > 0) {
+    if (incorrectAnswers > 0 && correctAnswers > 0) {
         const maxIncorrectDeduction = incorrectAnswers * 0.1;
         calculatedCorrectAnswers = correctAnswers - maxIncorrectDeduction;
     }
