@@ -115,7 +115,7 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
   sx={{ py: '6px', px: '12px' }}
 >
                   <Typography variant="body2" color="text.primary">
-                    Tool Selector
+                    Emergency Kit Builder
                   </Typography>
                 </MenuItem>
                 <MenuItem
