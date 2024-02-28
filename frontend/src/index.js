@@ -7,6 +7,7 @@ import "assets/scss/paper-dashboard.scss?v=1.3.0";
 import "assets/demo/demo.css";
 import "perfect-scrollbar/css/perfect-scrollbar.css";
 import ToolSelector from "views/User/ToolSelector.js"
+import Disaster from "views/User/Disaster.js"
 import AdminLayout from "layouts/Admin.js";
 import EmployeeLayout from "layouts/Employee.js";
 import AuthLayout from "layouts/Auth.js";
@@ -17,6 +18,7 @@ root.render(
   <BrowserRouter>
     <Routes>
     <Route path="/home/user" element={<LandingPage />}  />
+    <Route path="/home/disaster" element={<Disaster />}  />
     <Route path="/home/toolSelector" element={<ToolSelector />}  />
       <Route path="/auth/*" element={<AuthLayout />} />
       <Route path="/employee/*" element={<ProtectedRoute><EmployeeLayout /></ProtectedRoute>} />

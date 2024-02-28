@@ -1,14 +1,10 @@
 import { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
 import CssBaseline from '@mui/material/CssBaseline';
 import axios from 'axios';
-import { FormControl, FormGroup, FormControlLabel, Checkbox, Button, Typography, Modal, Box, Grid } from '@mui/material';
+import { FormControl, FormGroup, FormControlLabel, Checkbox, Button, Typography, Modal, Box, Grid,CircularProgress } from '@mui/material';
 import Footer from './components/Footer';
 import getLPTheme from './getLPTheme';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded';
 import AppAppBar from './components/AppAppBar';
 
 const defaultTheme = createTheme({});
@@ -19,12 +15,15 @@ const InteractiveTool = () => {
   const [tools, setTools] = useState([]);
   const [selectedTools, setSelectedTools] = useState([]);
   const [score, setScore] = useState({ correct: 0, total: 0, percentage: 0 });
-  const [modalOpen, setModalOpen] = useState(false);
+  const [disasterModalOpen, setDisasterModalOpen] = useState(false);
+  const [toolModalOpen, setToolModalOpen] = useState(false);
+  const [scoreModalOpen, setScoreModalOpen] = useState(false);
   const [mode, setMode] = useState('dark');
   const [showCustomTheme, setShowCustomTheme] = useState(true);
-  const LPtheme = createTheme(getLPTheme(mode));
   const [wrongAnswerMessage, setWrongAnswerMessage] = useState('');
-
+  const [showDescriptionModal, setShowDescriptionModal] = useState(false);
+  const LPtheme = createTheme(getLPTheme(mode));
+  const [showLoader, setShowLoader] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -52,6 +51,14 @@ const InteractiveTool = () => {
     }
   }, [selectedDisaster]);
 
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setShowDescriptionModal(false);
+  //   }, 10000); // 5000 milliseconds = 5 seconds
+
+  //   return () => clearTimeout(timer);
+  // }, []);
+
   const handleToolChange = (toolId) => {
     if (selectedTools.includes(toolId)) {
       setSelectedTools(selectedTools.filter(id => id !== toolId));
@@ -59,6 +66,7 @@ const InteractiveTool = () => {
       setSelectedTools([...selectedTools, toolId]);
     }
   };
+
   const calculateScore = () => {
     // Filter tools based on the selected disaster
     const filteredTools = tools.filter(tool =>
@@ -78,7 +86,6 @@ const InteractiveTool = () => {
 
     // Calculate the number of incorrect answers
     const incorrectAnswers = selectedTools.length - correctAnswers;
-    console.log(incorrectAnswers)
 
     // Deduct points for selecting more wrong answers
     let calculatedCorrectAnswers = correctAnswers;
@@ -110,13 +117,14 @@ const InteractiveTool = () => {
 
     // Update the score state and open the modal
     setScore(calculatedScore);
-    setModalOpen(true);
+    setScoreModalOpen(true);
     setWrongAnswerMessage(wrongAnswerMessage);
-};
+  };
 
-
-  const handleCloseModal = () => {
-    setModalOpen(false);
+  const handleCloseModals = () => {
+    setDisasterModalOpen(false);
+    setToolModalOpen(false);
+    setScoreModalOpen(false);
     window.location.reload(); // Refresh the page
   };
 
@@ -127,53 +135,98 @@ const InteractiveTool = () => {
   const toggleCustomTheme = () => {
     setShowCustomTheme((prev) => !prev);
   }
+  const handleStartButtonClick = () => {
+    setShowDescriptionModal(true);
+    setShowLoader(true);
+    setTimeout(() => {
+      setShowDescriptionModal(false);
+      setShowLoader(false);
+      setDisasterModalOpen(true);
+    }, 10000); // 5000 milliseconds = 5 seconds
+  };
 
   return (
     <>
     <ThemeProvider theme={showCustomTheme ? LPtheme : defaultTheme}>
-      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '70vh' }}> 
+      <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}> 
         <CssBaseline />
         <AppAppBar mode={mode} toggleColorMode={toggleColorMode} />
+        
+        <Box  p={16} m={2}>
+          
         <Box border={1} borderRadius={4} p={2} m={2}>
+          
           <Grid container spacing={2}>
-            <Grid item xs={6}>
-              <FormControl component="fieldset">
-                <Typography variant="h5" gutterBottom>Select a disaster:</Typography>
-                <FormGroup>
-                  {disasters.map(disaster => (
-                    <FormControlLabel
-                      key={disaster._id}
-                      control={<Checkbox />}
-                      label={disaster.name}
-                      onChange={() => setSelectedDisaster(disaster.name)}
-                      checked={selectedDisaster === disaster.name}
-                    />
-                  ))}
-                </FormGroup>
-              </FormControl>
-            </Grid>
-            <Grid item xs={6}>
-              {selectedDisaster && (
-                <FormControl component="fieldset">
-                  <Typography variant="h5" gutterBottom>Select tools:</Typography>
-                  <FormGroup>
-                    {tools.map(tool => (
-                      <FormControlLabel
-                        key={tool._id}
-                        control={<Checkbox />}
-                        label={tool.tname}
-                        onChange={() => handleToolChange(tool._id)}
-                        checked={selectedTools.includes(tool._id)}
-                      />
-                    ))}
-                  </FormGroup>
-                </FormControl>
-              )}
+            <Grid item xs={12}>
+              <Button variant="contained" onClick={handleStartButtonClick}>Start Emergency Kit Builder</Button>
             </Grid>
           </Grid>
-          <Button variant="contained" onClick={calculateScore}>Submit</Button>
         </Box>
-        <Modal open={modalOpen} onClose={handleCloseModal} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        </Box>
+       
+        <Modal open={showDescriptionModal} onClose={() => setShowDescriptionModal(false)} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          
+          <Box sx={{width: 400, bgcolor: 'background.paper', p: 2, textAlign: 'center' }}>
+  <Typography variant="h5">Emergency Kit Builder</Typography>
+  <br></br>
+  <Typography variant="body1">An emergency kit builder helps you prepare for unexpected disasters
+    by selecting essential tools and supplies tailored to specific disaster scenarios.
+    Use this tool to customize your emergency kit based on the type of disaster
+    you may encounter, ensuring you're well-prepared for any situation.
+  </Typography>
+  <br />
+    {showLoader && <CircularProgress />} {/* Conditionally render the loader */}
+</Box>
+        </Modal>
+
+        <Modal open={disasterModalOpen} onClose={() => setDisasterModalOpen(false)} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Box sx={{ width: 400, bgcolor: 'background.paper', p: 2 }}>
+            <FormControl component="fieldset">
+              <Typography variant="h5" gutterBottom>Select a disaster:</Typography>
+              <FormGroup>
+                {disasters.map(disaster => (
+                  <FormControlLabel
+                    key={disaster._id}
+                    control={<Checkbox />}
+                    label={disaster.name}
+                    onChange={() => {
+                      setSelectedDisaster(disaster.name);
+                      setDisasterModalOpen(false); // Close disaster modal when selected
+                      setToolModalOpen(true); // Open tool modal after selecting disaster
+                    }}
+                    checked={selectedDisaster === disaster.name}
+                  />
+                ))}
+              </FormGroup>
+            </FormControl>
+          </Box>
+          
+        </Modal>
+
+        <Modal open={toolModalOpen} onClose={() => setToolModalOpen(false)} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <Box sx={{ width: 400, bgcolor: 'background.paper', p: 2 }}>
+            <Typography variant="h6">Selected Disaster: {selectedDisaster}</Typography>
+            <FormControl component="fieldset">
+              <Typography variant="h5" gutterBottom>Select tools:</Typography>
+              <FormGroup>
+                {tools.map(tool => (
+                  <FormControlLabel
+                    key={tool._id}
+                    control={<Checkbox />}
+                    label={tool.tname}
+                    onChange={() => handleToolChange(tool._id)}
+                    checked={selectedTools.includes(tool._id)}
+                  />
+                ))}
+              </FormGroup>
+            </FormControl>
+            <Box mt={2} textAlign="right">
+              <Button variant="contained" onClick={calculateScore}>Submit</Button>
+            </Box>
+          </Box>
+        </Modal>
+
+        <Modal open={scoreModalOpen} onClose={handleCloseModals} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <Box sx={{ width: 400, bgcolor: 'background.paper', p: 2 }}>
             {score.percentage !== undefined && (
               <div>
@@ -197,7 +250,9 @@ const InteractiveTool = () => {
                 return null;
               })}
             </ul>
-            <Button onClick={handleCloseModal}>Close</Button>
+            <Box mt={2} textAlign="right">
+              <Button onClick={handleCloseModals}>Close</Button>
+            </Box>
           </Box>
         </Modal>
       </div>

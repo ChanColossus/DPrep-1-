@@ -45,6 +45,9 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
   const handleNavigate = () => {
     navigate('/home/toolSelector', { state: { theme: theme } });
   };
+  const handleNavigateDisaster = () => {
+    navigate('/home/disaster', { state: { theme: theme } });
+  };
   const logoutUser = async () => {
   
     try {
@@ -119,11 +122,11 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
                   </Typography>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => scrollToSection('testimonials')}
-                  sx={{ py: '6px', px: '12px' }}
+                   onClick={handleNavigateDisaster}
+                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary">
-                    Medias
+                    Disasters
                   </Typography>
                 </MenuItem>
                 <MenuItem
@@ -200,11 +203,15 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
                   >
                     <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
                   </Box>
-                  <MenuItem onClick={() => scrollToSection('features')}>
-                    Features
-                  </MenuItem>
-                  <MenuItem onClick={() => scrollToSection('testimonials')}>
-                    Testimonials
+                  <MenuItem
+  onClick={handleNavigate}
+>
+                 
+                    Emergency Kit Builder
+                
+                </MenuItem>
+                  <MenuItem onClick={handleNavigateDisaster}>
+                    Disasters
                   </MenuItem>
                   <MenuItem onClick={() => scrollToSection('highlights')}>
                     Highlights
