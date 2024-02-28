@@ -10,17 +10,17 @@ import Carousel from 'react-elastic-carousel';
 
 const defaultTheme = createTheme({});
 
-const Disaster = () => {
+const Area = () => {
   const [mode, setMode] = useState('dark');
   const [showCustomTheme, setShowCustomTheme] = useState(true);
   const LPtheme = createTheme(getLPTheme(mode));
-  const [disasters, setDisasters] = useState([]);
+  const [areas, setArea] = useState([]);
 
   useEffect(() => {
     const fetchDisasters = async () => {
       try {
-        const response = await axios.get('http://localhost:4001/api/v1/disasters');
-        setDisasters(response.data.disasters);
+        const response = await axios.get('http://localhost:4001/api/v1/area');
+        setArea(response.data.area);
       } catch (error) {
         console.error('Error fetching disasters:', error);
       }
@@ -45,33 +45,33 @@ const Disaster = () => {
         <AppAppBar mode={mode} toggleColorMode={toggleColorMode} />
         <Box p={13} m={2}>
         <Typography variant="h2" gutterBottom align="center">
-      Disasters
+      Areas
     </Typography>
         <Typography variant="h5" gutterBottom align="center" sx={{ fontSize: '1rem' }}>
       "We can't stop natural disasters but we can arm ourselves with knowledge: so many lives wouldn't have to be lost if there was enough disaster preparedness."
     </Typography>
     <br/>
         <Grid container spacing={3} justifyContent="center">
-          {disasters.map((disaster) => (
-            <Grid item key={disaster._id}>
+          {areas.map((area) => (
+            <Grid item key={area._id}>
               <Card sx={{ maxWidth: 345 }}>
                 <Carousel>
-                  {disaster.images.map((image, index) => (
+                  {area.bimages.map((image, index) => (
                     <CardMedia
                       key={index}
                       component="img"
                       height="140"
                       image={image.url}
-                      alt={`${disaster.name} - Image ${index + 1}`}
+                      alt={`${area.bname} - Image ${index + 1}`}
                     />
                   ))}
                 </Carousel>
                 <CardContent>
                   <Typography gutterBottom variant="h5" component="div">
-                    {disaster.name}
+                    {area.bname}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    {disaster.description}
+                    {area.bdescription}
                   </Typography>
                 </CardContent>
               </Card>
@@ -88,4 +88,4 @@ const Disaster = () => {
   );
 };
 
-export default Disaster;
+export default Area;

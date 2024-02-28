@@ -48,6 +48,9 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
   const handleNavigateDisaster = () => {
     navigate('/home/disaster', { state: { theme: theme } });
   };
+  const handleNavigateArea = () => {
+    navigate('/home/area', { state: { theme: theme } });
+  };
   const logoutUser = async () => {
   
     try {
@@ -113,14 +116,7 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
       />
     </Link>
               <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-              <MenuItem
-  onClick={handleNavigate}
-  sx={{ py: '6px', px: '12px' }}
->
-                  <Typography variant="body2" color="text.primary">
-                    Emergency Kit Builder
-                  </Typography>
-                </MenuItem>
+             
                 <MenuItem
                    onClick={handleNavigateDisaster}
                    sx={{ py: '6px', px: '12px' }}
@@ -130,11 +126,11 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
                   </Typography>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => scrollToSection('highlights')}
+                  onClick={handleNavigateArea}
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary">
-                    Area
+                    Areas
                   </Typography>
                 </MenuItem>
                 <MenuItem
@@ -162,6 +158,14 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
                 alignItems: 'center',
               }}
             >
+               <MenuItem
+  onClick={handleNavigate}
+  sx={{ py: '6px', px: '12px' }}
+>
+                  <Typography variant="body2" color="text.primary">
+                    Emergency Kit Builder
+                  </Typography>
+                </MenuItem>
               <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
              
               <Button
@@ -203,6 +207,17 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
                   >
                     <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
                   </Box>
+                 
+                  <MenuItem onClick={handleNavigateDisaster}>
+                    Disasters
+                  </MenuItem>
+                  <MenuItem onClick={handleNavigateArea}>
+                    Areas
+                  </MenuItem>
+                  <MenuItem onClick={() => scrollToSection('pricing')}>
+                    Pricing
+                  </MenuItem>
+                  <MenuItem onClick={() => scrollToSection('faq')}>FAQ</MenuItem>
                   <MenuItem
   onClick={handleNavigate}
 >
@@ -210,16 +225,6 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
                     Emergency Kit Builder
                 
                 </MenuItem>
-                  <MenuItem onClick={handleNavigateDisaster}>
-                    Disasters
-                  </MenuItem>
-                  <MenuItem onClick={() => scrollToSection('highlights')}>
-                    Highlights
-                  </MenuItem>
-                  <MenuItem onClick={() => scrollToSection('pricing')}>
-                    Pricing
-                  </MenuItem>
-                  <MenuItem onClick={() => scrollToSection('faq')}>FAQ</MenuItem>
                   <Divider />
                
                 </Box>
