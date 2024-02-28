@@ -47,6 +47,7 @@ const theme = useTheme()
   <Typography component="h1" variant="h1">
     Be Prepared on Disasters
   </Typography>
+  
 </Box>
         <Typography variant="body1" textAlign="center" color="text.secondary">
           The Philippines, located in Southeast Asia, is prone to various natural disasters due 
@@ -54,6 +55,7 @@ const theme = useTheme()
           originating from the Pacific Ocean. <br /><br />
           Stay extra prepared for natural disasters by leveraging the resources and information available on this website.
         </Typography>
+        <br /><br />
         <InfographicCarousel infographics={infographics} />
       </Container>
     </Box>

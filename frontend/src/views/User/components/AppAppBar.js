@@ -51,6 +51,12 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
   const handleNavigateArea = () => {
     navigate('/home/area', { state: { theme: theme } });
   };
+  const handleNavigateTool = () => {
+    navigate('/home/tool', { state: { theme: theme } });
+  };
+  const handleNavigateReport = () => {
+    navigate('/home/reports', { state: { theme: theme } });
+  };
   const logoutUser = async () => {
   
     try {
@@ -134,15 +140,15 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
                   </Typography>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => scrollToSection('pricing')}
+                   onClick={handleNavigateTool}
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary">
-                    Disaster
+                    Tools
                   </Typography>
                 </MenuItem>
                 <MenuItem
-                  onClick={() => scrollToSection('faq')}
+                   onClick={handleNavigateReport}
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary">
@@ -214,10 +220,12 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
                   <MenuItem onClick={handleNavigateArea}>
                     Areas
                   </MenuItem>
-                  <MenuItem onClick={() => scrollToSection('pricing')}>
-                    Pricing
+                  <MenuItem onClick={handleNavigateTool}>
+                    Tools
                   </MenuItem>
-                  <MenuItem onClick={() => scrollToSection('faq')}>FAQ</MenuItem>
+                  <MenuItem onClick={handleNavigateReport}>
+                    Reports
+                  </MenuItem>
                   <MenuItem
   onClick={handleNavigate}
 >

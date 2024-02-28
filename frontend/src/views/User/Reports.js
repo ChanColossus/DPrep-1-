@@ -1,19 +1,30 @@
 import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Grid, Typography, Box } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import AppAppBar from './components/AppAppBar';
+import Footer from './components/Footer';
+import getLPTheme from './getLPTheme';
+import Carousel from 'react-elastic-carousel';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import CommentIcon from '@mui/icons-material/Comment';
 import IconButton from '@mui/material/IconButton';
-import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
 import Modal from '@mui/material/Modal';
 import Backdrop from '@mui/material/Backdrop';
 import Fade from '@mui/material/Fade';
 import Button from '@mui/material/Button';
-import Carousel from 'react-elastic-carousel';
-import Grid from '@mui/material/Grid';
 
-export default function GutterlessList() {
+
+
+const defaultTheme = createTheme({});
+
+const Reports = () => {
+    const [showCustomTheme, setShowCustomTheme] = useState(true);
+    const [mode, setMode] = useState('dark');
+  const LPtheme = createTheme(getLPTheme(mode));
   const [reports, setReports] = useState([]);
   const [selectedReport, setSelectedReport] = useState(null);
   const [openModal, setOpenModal] = useState(false);
@@ -28,7 +39,7 @@ export default function GutterlessList() {
       const data = await response.json();
       // Sort the reports array based on the date property in descending order
       const sortedReports = data.reports.sort((a, b) => new Date(b.date) - new Date(a.date));
-      setReports(sortedReports.slice(0, 3));
+      setReports(sortedReports);
     } catch (error) {
       console.error('Error fetching reports:', error);
     }
@@ -43,13 +54,30 @@ export default function GutterlessList() {
     setOpenModal(false);
   };
 
+  const toggleColorMode = () => {
+    setMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
+  const toggleCustomTheme = () => {
+    setShowCustomTheme((prev) => !prev);
+  };
+
   return (
-    <Box display="flex" justifyContent="center">
-      <Box width="80%">
+    <>
+      <ThemeProvider theme={showCustomTheme ? LPtheme : defaultTheme}>
+      <div >
+        <CssBaseline />
+        <AppAppBar mode={mode} toggleColorMode={toggleColorMode} />
+        <Box display="flex" justifyContent="center" p={13} m={2}>
+      <Box maxWidth="80%" width="80%">
         <Box textAlign="center">
           <Typography variant="h2" gutterBottom>
-            Recent Reports
+            All Reports
           </Typography>
+          <Typography variant="h5" gutterBottom align="center" sx={{ fontSize: '1rem' }}>
+      "We can't stop natural disasters but we can arm ourselves with knowledge: so many lives wouldn't have to be lost if there was enough disaster preparedness."
+    </Typography>
+    <br/>
         </Box>
         <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
           {reports.map((report) => (
@@ -128,5 +156,11 @@ export default function GutterlessList() {
         </Modal>
       </Box>
     </Box>
+        </div>
+        <Footer />
+      </ThemeProvider>
+    </>
   );
-}
+};
+
+export default Reports;

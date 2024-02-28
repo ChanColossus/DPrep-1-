@@ -9,6 +9,8 @@ import "perfect-scrollbar/css/perfect-scrollbar.css";
 import ToolSelector from "views/User/ToolSelector.js"
 import Disaster from "views/User/Disaster.js"
 import Area from "views/User/Area.js"
+import Tool from "views/User/DisasterTool.js"
+import Reports from "views/User/Reports.js"
 import AdminLayout from "layouts/Admin.js";
 import EmployeeLayout from "layouts/Employee.js";
 import AuthLayout from "layouts/Auth.js";
@@ -20,6 +22,8 @@ root.render(
     <Routes>
     <Route path="/home/user" element={<LandingPage />}  />
     <Route path="/home/disaster" element={<Disaster />}  />
+    <Route path="/home/tool" element={<Tool />}  />
+    <Route path="/home/reports" element={<Reports />}  />
     <Route path="/home/area" element={<Area />}  />
     <Route path="/home/toolSelector" element={<ToolSelector />}  />
       <Route path="/auth/*" element={<AuthLayout />} />
