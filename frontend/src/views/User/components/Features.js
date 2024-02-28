@@ -58,7 +58,7 @@ export default function GutterlessList() {
               disableGutters
               secondaryAction={
                 <IconButton aria-label="comment" onClick={() => handleReportClick(report)}>
-                  <CommentIcon /><Typography variant="body2" color="textSecondary">Click to view details</Typography>
+                  <CommentIcon /><Typography variant="body2" color="textSecondary">Details</Typography>
                 </IconButton>
               }
             >

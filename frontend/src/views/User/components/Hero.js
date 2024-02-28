@@ -43,9 +43,11 @@ const theme = useTheme()
           pb: { xs: 8, sm: 12 },
         }}
       >
-        <Typography component="h1" variant="h1">
-          Be Prepared on Disasters
-        </Typography>
+        <Box sx={{ textAlign: 'center' }}>
+  <Typography component="h1" variant="h1">
+    Be Prepared on Disasters
+  </Typography>
+</Box>
         <Typography variant="body1" textAlign="center" color="text.secondary">
           The Philippines, located in Southeast Asia, is prone to various natural disasters due 
           to its geographical location along the Pacific Ring of Fire and its exposure to typhoons 
