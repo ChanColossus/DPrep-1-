@@ -57,6 +57,9 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
   const handleNavigateReport = () => {
     navigate('/home/reports', { state: { theme: theme } });
   };
+  const handleNavigateLearning = () => {
+    navigate('/home/learning', { state: { theme: theme } });
+  };
   const logoutUser = async () => {
   
     try {
@@ -144,7 +147,7 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
                   sx={{ py: '6px', px: '12px' }}
                 >
                   <Typography variant="body2" color="text.primary">
-                    Tools
+                    Disaster Tools
                   </Typography>
                 </MenuItem>
                 <MenuItem
@@ -153,6 +156,14 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
                 >
                   <Typography variant="body2" color="text.primary">
                     Reports
+                  </Typography>
+                </MenuItem>
+                <MenuItem
+                   onClick={handleNavigateLearning}
+                  sx={{ py: '6px', px: '12px' }}
+                >
+                  <Typography variant="body2" color="text.primary">
+                    Learning
                   </Typography>
                 </MenuItem>
               </Box>
@@ -221,10 +232,13 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
                     Areas
                   </MenuItem>
                   <MenuItem onClick={handleNavigateTool}>
-                    Tools
+                    Disaster Tools
                   </MenuItem>
                   <MenuItem onClick={handleNavigateReport}>
                     Reports
+                  </MenuItem>
+                  <MenuItem onClick={handleNavigateLearning}>
+                    Learning
                   </MenuItem>
                   <MenuItem
   onClick={handleNavigate}

@@ -151,7 +151,6 @@ const InteractiveTool = () => {
       <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}> 
         <CssBaseline />
         <AppAppBar mode={mode} toggleColorMode={toggleColorMode} />
-        
         <Box  p={16} m={2}>
           
         <Box border={1} borderRadius={4} p={2} m={2}>
