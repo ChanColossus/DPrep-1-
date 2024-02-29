@@ -2,6 +2,11 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import {
+ 
+  NavItem,
+ 
+} from "reactstrap";
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
@@ -18,6 +23,7 @@ import DPrepLogo from './Dpreplogo.png'
 import {logout } from "../../../utils/helpers";
 import axios from "axios";
 import { Link } from 'react-router-dom';
+import {getUser} from '../../../utils/helpers.js'
 const logoStyle = {
   width: '140px',
   height: 'auto',
@@ -26,7 +32,9 @@ const logoStyle = {
 
 function AppAppBar({ mode, toggleColorMode,theme }) {
   const [open, setOpen] = React.useState(false);
+  const [user, setUser] = useState("");
   const navigate = useNavigate();
+  const [isAdmin, setIsAdmin] = useState(false);
   const toggleDrawer = (newOpen) => () => {
     setOpen(newOpen);
   };
@@ -77,6 +85,17 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
     navigate('/home/quiz', { state: { theme: theme } });
     handleClose();
   };
+  const handleNavigateAdmin = () => {
+    navigate('/admin/dashboard', { state: { theme: theme } });
+    handleClose();
+  };
+  React.useEffect(() => {
+    const user = getUser();
+    setUser(user);
+
+    // Check if the user is admin
+    setIsAdmin(user.role === "admin");
+  }, []);
   const logoutUser = async () => {
   
     try {
@@ -211,6 +230,13 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
             Emergency Kit Builder
           </Typography>
         </MenuItem>
+        {isAdmin && (
+          <MenuItem onClick={handleNavigateAdmin}>
+                <Typography variant="body2" color="text.primary">
+                Admin Panel
+              </Typography>
+              </MenuItem>
+              )}
       </Menu>
               <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
              
@@ -280,9 +306,16 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
   onClick={handleNavigateQuiz}
 >
                  
-                    Emergency Kit Builder
+                    Knowledge Test
                 
                 </MenuItem>
+                {isAdmin && (
+          <MenuItem onClick={handleNavigateAdmin}>
+               
+                Admin Panel
+             
+              </MenuItem>
+              )}
                   <Divider />
                
                 </Box>

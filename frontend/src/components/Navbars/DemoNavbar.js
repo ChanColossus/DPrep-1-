@@ -46,6 +46,8 @@ function Header(props) {
   const [color, setColor] = React.useState("transparent");
   const sidebarToggle = React.useRef();
   const location = useLocation();
+  const [isAdmin, setIsAdmin] = useState(false);
+  
   const toggle = () => {
     if (isOpen) {
       setColor("transparent");
@@ -96,7 +98,13 @@ function Header(props) {
   React.useEffect(() => {
     console.log(showAlert); // Log the updated value of showAlert
   }, [showAlert]);
+  React.useEffect(() => {
+    const user = getUser();
+    setUser(user);
 
+    // Check if the user is admin
+    setIsAdmin(user.role === "admin");
+  }, []);
   const logoutUser = async () => {
     try {
         await axios.get(`http://localhost:4001/api/v1/logout`);
@@ -171,11 +179,18 @@ function Header(props) {
                 </p>
               </DropdownToggle>
               <DropdownMenu right>
-              <DropdownItem tag={Link} to="/" onClick={logoutHandler}>
+              {isAdmin && (
+                <DropdownItem tag={Link} to="/">
+                  User Panel
+                </DropdownItem>
+                )}
+              <DropdownItem tag={Link} to="/home/user" onClick={logoutHandler}>
                   Logout
                 </DropdownItem>
+                
               </DropdownMenu>
             </Dropdown>
+            
           </Nav>
         </Collapse>
       </Container>
