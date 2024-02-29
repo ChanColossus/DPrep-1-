@@ -1,11 +1,13 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+import { Menu } from '@mui/material';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
@@ -42,8 +44,19 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
       setOpen(false);
     }
   };
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
   const handleNavigate = () => {
     navigate('/home/toolSelector', { state: { theme: theme } });
+    handleClose();
   };
   const handleNavigateDisaster = () => {
     navigate('/home/disaster', { state: { theme: theme } });
@@ -59,6 +72,10 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
   };
   const handleNavigateLearning = () => {
     navigate('/home/learning', { state: { theme: theme } });
+  };
+  const handleNavigateQuiz = () => {
+    navigate('/home/quiz', { state: { theme: theme } });
+    handleClose();
   };
   const logoutUser = async () => {
   
@@ -166,6 +183,7 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
                     Learning
                   </Typography>
                 </MenuItem>
+                
               </Box>
             </Box>
             <Box
@@ -175,14 +193,25 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
                 alignItems: 'center',
               }}
             >
-               <MenuItem
-  onClick={handleNavigate}
-  sx={{ py: '6px', px: '12px' }}
->
-                  <Typography variant="body2" color="text.primary">
-                    Emergency Kit Builder
-                  </Typography>
-                </MenuItem>
+              <Button onClick={handleClick}>
+        Web Tools
+      </Button>
+      <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <MenuItem onClick={handleNavigateQuiz}>
+          <Typography variant="body2" color="text.primary">
+            Knowledge Test
+          </Typography>
+        </MenuItem>
+        <MenuItem onClick={handleNavigate}>
+          <Typography variant="body2" color="text.primary">
+            Emergency Kit Builder
+          </Typography>
+        </MenuItem>
+      </Menu>
               <ToggleColorMode mode={mode} toggleColorMode={toggleColorMode} />
              
               <Button
@@ -242,6 +271,13 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
                   </MenuItem>
                   <MenuItem
   onClick={handleNavigate}
+>
+                 
+                    Emergency Kit Builder
+                
+                </MenuItem>
+                <MenuItem
+  onClick={handleNavigateQuiz}
 >
                  
                     Emergency Kit Builder
