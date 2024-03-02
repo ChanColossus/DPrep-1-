@@ -85,6 +85,10 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
     navigate('/home/quiz', { state: { theme: theme } });
     handleClose();
   };
+  const handleNavigatePredictive = () => {
+    navigate('/predictive', { state: { theme: theme } });
+    handleClose();
+  };
   const handleNavigateAdmin = () => {
     navigate('/admin/dashboard', { state: { theme: theme } });
     handleClose();
@@ -230,6 +234,11 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
             Emergency Kit Builder
           </Typography>
         </MenuItem>
+        <MenuItem onClick={handleNavigatePredictive}>
+          <Typography variant="body2" color="text.primary">
+            Check Predictions
+          </Typography>
+        </MenuItem>
         {isAdmin && (
           <MenuItem onClick={handleNavigateAdmin}>
                 <Typography variant="body2" color="text.primary">
@@ -307,6 +316,13 @@ function AppAppBar({ mode, toggleColorMode,theme }) {
 >
                  
                     Knowledge Test
+                
+                </MenuItem>
+                <MenuItem
+  onClick={handleNavigatePredictive}
+>
+                 
+                   Check Predictions
                 
                 </MenuItem>
                 {isAdmin && (
