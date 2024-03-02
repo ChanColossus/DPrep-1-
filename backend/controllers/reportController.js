@@ -100,6 +100,47 @@ console.log(req.body)
     }
 };
 
-exports.predictive = async(req,res,next) => {
-    
-}
+exports.predictive = async (req, res, next) => {
+    try {
+      const areaId = req.params.areaId;
+      const disasterId = req.params.disasterId;
+      
+      // Fetch disaster reports for the selected area and disaster
+      const disasterReports = await Report.find({ area: areaId, disaster: disasterId });
+      
+      // Group reports by month
+      const monthlyReports = {};
+      disasterReports.forEach(report => {
+        const monthYear = report.date.toISOString().substr(0, 7); // Extract month and year (e.g., "2022-03")
+        if (!monthlyReports[monthYear]) {
+          monthlyReports[monthYear] = [];
+        }
+        monthlyReports[monthYear].push(report);
+      });
+      
+      // Calculate percentage chance for each month of the specified year
+      const percentageChances = {};
+      const currentYear = new Date().getFullYear(); // Get the current year
+      for (let month = 1; month <= 12; month++) { // Iterate over each month of the year
+        const monthYear = `${currentYear}-${month.toString().padStart(2, '0')}`; // Format month and year
+        const reports = monthlyReports[monthYear] || []; // Get reports for the month, or an empty array if no reports
+        const totalReports = reports.length;
+        const totalAreaReports = await Report.find({ area: areaId }).countDocuments();
+        const probability = totalReports / totalAreaReports;
+        percentageChances[monthYear] = probability * 100;
+      }
+      
+      res.status(200).json({
+        success: true,
+        monthlyReports: percentageChances
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server Error' });
+    }
+  };
+  
+  
+
+  
+  

@@ -152,7 +152,8 @@ const Learning = () => {
               <Card key={video._id}>
                 <CardMedia
                   component="video"
-                  maxHeight="100%" // Adjust height here
+                  height="320px"
+                  maxHeight="10%" // Adjust height here
                   src={video.mvideo[0].url} // Assuming first video in the array
                   controls
                 />

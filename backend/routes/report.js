@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const upload = require("../utils/multer");
 const {
-    newReport,getReport,updateReport,getSingleReport,deleteReport
+    newReport,getReport,updateReport,getSingleReport,deleteReport,predictive
   } = require("../controllers/reportController");
 const { isAuthenticatedUser,authorizeRoles } = require('../middlewares/auth');
 
@@ -13,6 +13,7 @@ router.post(
     // authorizeRoles("admin"),
     newReport
   );
+router.get("/predictive-analysis/:areaId/:disasterId", predictive);
 router.get("/reports", getReport);
 router.put(
   "/admin/report/:id",
