@@ -19,7 +19,7 @@ const Learning = () => {
   const [selectedDisaster, setSelectedDisaster] = useState('');
   const [filteredIg, setFilteredIg] = useState([]);
   const [filteredMedia, setFilteredMedia] = useState([]);
-
+  const [disasters, setDisasters] = useState([]);
   const LPtheme = createTheme(getLPTheme(mode));
 
   useEffect(() => {
@@ -42,7 +42,18 @@ const Learning = () => {
 
     fetchData();
   }, []);
+  useEffect(() => {
+    const fetchDisasters = async () => {
+      try {
+        const response = await axios.get('http://localhost:4001/api/v1/disasters');
+        setDisasters(response.data.disasters);
+      } catch (error) {
+        console.error('Error fetching disasters:', error);
+      }
+    };
 
+    fetchDisasters();
+  }, []);
   const toggleColorMode = () => {
     setMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
   };
@@ -113,7 +124,7 @@ const Learning = () => {
               <Card key={infographic._id}>
                 <CardMedia
                   component="img"
-                  height="700px"
+                  height="500px"
                   maxHeight="100%" // Adjust height here
                   image={infographic.gimages[0].url} // Assuming first image in the array
                   alt={infographic.gname}
@@ -153,6 +164,38 @@ const Learning = () => {
               </Card>
             ))}
           </Carousel>
+          <Typography variant="h2" gutterBottom textAlign="center">
+      Types of disasters
+    </Typography>
+        </Grid>
+        
+        <Grid container spacing={3} justifyContent="center">
+        
+          {disasters.map((disaster) => (
+            <Grid item key={disaster._id}>
+              <Card sx={{ maxWidth: 345 }}>
+                <Carousel>
+                  {disaster.images.map((image, index) => (
+                    <CardMedia
+                      key={index}
+                      component="img"
+                      height="140"
+                      image={image.url}
+                      alt={`${disaster.name} - Image ${index + 1}`}
+                    />
+                  ))}
+                </Carousel>
+                <CardContent>
+                  <Typography gutterBottom variant="h5" component="div">
+                    {disaster.name}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {disaster.description}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
         </Grid>
       </Grid>
       <Footer />

@@ -99,3 +99,7 @@ console.log(req.body)
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 };
+
+exports.predictive = async(req,res,next) => {
+    
+}

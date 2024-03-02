@@ -151,9 +151,10 @@ const Quiz = () => {
   return (
     <>
       <ThemeProvider theme={showCustomTheme ? LPtheme : defaultTheme}>
-        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
           <CssBaseline />
           <AppAppBar mode={mode} toggleColorMode={toggleColorMode} />
+          
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <Box p={13} m={2}>
