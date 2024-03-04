@@ -130,7 +130,7 @@ const PredictiveAnalysis = () => {
 
             <Grid item xs={12}>
               <Button variant="contained" color="primary" onClick={handlePredictiveAnalysis} fullWidth>
-                Get Predictive Analysis for year {currentYear}
+                Get Predictive Analysis for year {currentYear + 1}
               </Button>
             </Grid>
           </Grid>

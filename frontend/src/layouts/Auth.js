@@ -13,8 +13,8 @@ function AuthDashboard(props) {
   }, [props.location]);
 
   return (
-    <div>
-      <AuthNavbar {...props} />
+    <div >
+   
       <div ref={mainPanel}>
         {/* Render the routes */}
         <Routes>
@@ -27,7 +27,7 @@ function AuthDashboard(props) {
             />
           ))}
         </Routes>
-        <Footer fluid />
+
       </div>
     </div>
   );
