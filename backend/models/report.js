@@ -24,7 +24,12 @@ const DisasterReportSchema = new Schema({
     casualties: {
         type: Number,
         required: true
+    },
+    deleted: {
+        type: Boolean,
+        default: false // Default value is false, indicating the report is not deleted
     }
+    
 });
 
 // Create model for Disaster Report
