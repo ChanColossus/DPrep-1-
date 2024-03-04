@@ -135,7 +135,7 @@ function Dashboard() {
               </Row>
             </CardBody>
             <CardFooter>
-              <Button tag={Link} to="/admin/reports" className="btn-fill" color="primary">
+              <Button tag={Link} to="/admin/reports" className="btn-fill" color="warning">
                 More
               </Button>
             </CardFooter>

@@ -62,7 +62,7 @@ function Sidebar(props) {
           </div>
         </a>
         <a
-          href="http://localhost:3000/admin/dashboard"
+          href=""
           className="simple-text logo-normal"
         >
           DPrep
