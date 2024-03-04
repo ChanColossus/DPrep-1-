@@ -61,7 +61,7 @@ function Header(props) {
   };
   const navigate = useNavigate();
   const [user, setUser] = useState("");
-  const getBrand = () => {
+  const getBrand = () => {  
     let brandName = "";
     routes.map((prop, key) => {
       if (window.location.href.indexOf(prop.layout + prop.path) !== -1) {
@@ -180,7 +180,7 @@ function Header(props) {
               </DropdownToggle>
               <DropdownMenu right>
               {isAdmin && (
-                <DropdownItem tag={Link} to="/">
+                <DropdownItem tag={Link} to="/home/user">
                   User Panel
                 </DropdownItem>
                 )}
