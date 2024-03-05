@@ -24,6 +24,7 @@ import {
   Button,
 } from "reactstrap";
 import { Carousel } from 'react-bootstrap';
+import { Typography } from "@mui/material";
 
 function Area() {
   const [tableData, setTableData] = useState({});
@@ -31,9 +32,9 @@ function Area() {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedDisasters, setSelectedDisasters] = useState([]);
   const [newAreaData, setNewAreaData] = useState({
-    name: "",
-    description: "",
-    images: [],
+    bname: "",
+    bdescription: "",
+    bimages: [],
     disasterProne: []
   });
   const [disasters, setDisasters] = useState([]);
@@ -47,6 +48,13 @@ function Area() {
     disasterProne: []
   });
   const [allDisasters, setAllDisasters] = useState([]);
+  const [createErrors, setCreateErrors] = useState({}); // State to hold create form validation errors
+  const [updateErrors, setUpdateErrors] = useState({
+    bname: '',
+    bdescription: '',
+    bimages: '',
+    disasterProne: ''
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -109,9 +117,9 @@ function Area() {
       setDisasters(disastersResponse.data.disasters); // Assuming the response data has a key named 'disasters'
       setModalOpen(true);
       setNewAreaData({
-        bname: "",
-        bdescription: "",
-        bimages: [],
+        name: "", // Fixed typo here
+        description: "", // Fixed typo here
+        images: [],
         disasterProne: [],
       });
     } catch (error) {
@@ -119,18 +127,40 @@ function Area() {
     }
   };
   const closeModal = () => {
+    setCreateErrors({});
     setModalOpen(false);
   };
   const handleImageChangeCreate = (e) => {
     const files = Array.from(e.target.files);
-    setNewAreaData({
-      ...newAreaData,
+    setNewAreaData(prevState => ({
+      ...prevState,
       bimages: files,
       imagePreviews: files.map((file) => URL.createObjectURL(file)),
-    });
+    }));
+    console.log(newAreaData); // Add this line to check the state after setting bimages
   };
+  
   const handleFormSubmit = async () => {
     try {
+      // Basic form validation
+      const errors = {};
+    if (!newAreaData.bname) {
+      errors.bname = "Name is required";
+    }
+    if (!newAreaData.bdescription) {
+      errors.bdescription = "Description is required";
+    }
+    if (newAreaData.disasterProne.length === 0) {
+      errors.disasterProne = "Please select at least one disaster";
+    }
+    if (!Array.isArray(newAreaData.bimages) || newAreaData.bimages.length === 0) {  // <-- Error occurs here
+      errors.bimages = "Please select at least one image";
+    }
+    if (Object.keys(errors).length > 0) {
+      setCreateErrors(errors);
+      return; // Stop form submission if there are errors
+    }
+
       const config = {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -140,8 +170,8 @@ function Area() {
 
       console.log(getToken())
       const formData = new FormData();
-      formData.append("bname", newAreaData.bname);
-      formData.append("bdescription", newAreaData.bdescription);
+      formData.append("bname", newAreaData.bname); // Changed to use correct property name
+      formData.append("bdescription", newAreaData.bdescription); // Changed to use correct property name
 
 
       newAreaData.disasterProne.forEach((disaster) => {
@@ -190,6 +220,12 @@ function Area() {
   };
   
   const closeModalUpdate = () => {
+    setUpdateErrors({
+      bname: '', // Fixed typo here
+      bdescription: '', // Fixed typo here
+      bimages: '',
+      disasterProne: '',
+    });
     setUpdateModalOpen(false);
   };
   
@@ -213,9 +249,50 @@ function Area() {
 
     files.forEach(readAndPreview);
 };
-  
+const validateUpdateForm = () => {
+  let valid = true;
+  const errors = {};
+
+  if (!updateAreaData.bname.trim()) {
+    errors.bname = 'Name is required';
+    valid = false;
+  }
+
+  if (!updateAreaData.bdescription.trim()) {
+    errors.bdescription = 'Description is required';
+    valid = false;
+  }
+
+  if (updateAreaData.disasterProne.length === 0) {
+    errors.disasterProne = 'At least one disaster must be selected';
+    valid = false;
+  }
+
+  if (!updateAreaData.bimages || updateAreaData.bimages.length === 0) {
+    // Show an error message or prevent form submission
+    errors.bimages = 'At least one image must be selected';
+    valid = false;
+  }
+
+  if (valid) {
+    setUpdateErrors({
+      bname: '',
+      bdescription: '',
+      bimages: '',
+      disasterProne: ''
+    });
+  } else {
+    setUpdateErrors(errors);
+  }
+
+  return valid; // Return false when there's an error
+};
 const handleUpdateSubmit = async () => {
   try {
+    if (!validateUpdateForm()) {
+      // Stop form submission if validation fails
+      return;
+    }
     const config = {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -223,6 +300,8 @@ const handleUpdateSubmit = async () => {
       },
     };
 
+    
+      
     const formData = new FormData();
     formData.append("bname", updateAreaData.bname);
     formData.append("bdescription", updateAreaData.bdescription);
@@ -240,14 +319,14 @@ const handleUpdateSubmit = async () => {
           formData.append(`bimages[${index}]`, image);
         }
       });
-    }
+    
 
     const response = await axios.put(`http://localhost:4001/api/v1/admin/area/${updateId}`, formData, config);
     setDataRefresh(true);
 
     console.log(formData)
     console.log(response.data);
-
+  }
     closeModalUpdate();
   } catch (error) {
     console.error("Error submitting update form:", error);
@@ -337,18 +416,20 @@ const availableDisasters = allDisasters.filter(disaster => !updateAreaData.disas
                       <Input
                         type="text"
                         id="bname"
-                        value={newAreaData.name}
+                        value={newAreaData.bname}
                         onChange={(e) =>
                           setNewAreaData({ ...newAreaData, bname: e.target.value })
                         }
                       />
+                      <Typography> {createErrors.bname && <span className="text-danger">{createErrors.bname}</span>}</Typography>
+                       
                     </FormGroup>
                     <FormGroup>
                       <Label for="bdescription">Description</Label>
                       <Input
                         type="textarea"
                         id="bdescription"
-                        value={newAreaData.description}
+                        value={newAreaData.bdescription}
                         onChange={(e) =>
                           setNewAreaData({
                             ...newAreaData,
@@ -356,6 +437,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateAreaData.disas
                           })
                         }
                       />
+                       <Typography> {createErrors.bdescription && <span className="text-danger">{createErrors.bdescription}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
                       <Label for="images">Images</Label>
@@ -366,6 +448,8 @@ const availableDisasters = allDisasters.filter(disaster => !updateAreaData.disas
                         onChange={handleImageChangeCreate}
                         accept="image/*"
                       />
+                      <Typography> {createErrors.bimages && <span className="text-danger">{createErrors.bimages}</span>}</Typography>
+                       
                       {newAreaData.imagePreviews &&
                         newAreaData.imagePreviews.map((preview, index) => (
                           <img
@@ -382,6 +466,9 @@ const availableDisasters = allDisasters.filter(disaster => !updateAreaData.disas
                       onChange={handleSelectChange}
                       isMulti
                     />
+                    <Typography>
+                    {createErrors.disasterProne && <span className="text-danger">{createErrors.disasterProne}</span>}
+                    </Typography>
                     <Button color="primary" onClick={handleFormSubmit}>
                       Submit
                     </Button>
@@ -402,6 +489,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateAreaData.disas
                           setUpdateAreaData({ ...updateAreaData, bname: e.target.value })
                         }
                       />
+                       <Typography> {updateErrors.bname && <span className="text-danger">{updateErrors.bname}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
                       <Label for="bdescription">Description</Label>
@@ -416,6 +504,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateAreaData.disas
                           })
                         }
                       />
+                        <Typography> {updateErrors.bdescription && <span className="text-danger">{updateErrors.bdescription}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
                       <Label for="bimages">Images</Label>
@@ -426,6 +515,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateAreaData.disas
                         onChange={handleImageChangeUpdate}
                         accept="image/*"
                       />
+                       <Typography> {updateErrors.bimages && <span className="text-danger">{updateErrors.bimages}</span>}</Typography>
                        {
                         updateAreaData.bimages && updateAreaData.bimages.length > 0 ? (
                           updateAreaData.bimages.map((image, index) => (
@@ -438,6 +528,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateAreaData.disas
                           ))
                         ) : null
                       }
+                      
                     </FormGroup>
                     <FormGroup>
   <Label for="updateDisasters">Disasters</Label>
@@ -447,6 +538,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateAreaData.disas
     onChange={handleSelectChangeUpdate}
     isMulti
   />
+  <Typography> {updateErrors.disasterProne && <span className="text-danger">{updateErrors.disasterProne}</span>}</Typography>
 </FormGroup>
                     <Button color="primary" onClick={handleUpdateSubmit}>
                       Update
