@@ -26,7 +26,7 @@ import {
   Button,
 } from "reactstrap";
 import { Carousel } from 'react-bootstrap';
-
+import { CircularProgress } from '@mui/material'; 
 function Quiz() {
   const [tableData, setTableData] = useState({});
   const [error, setError] = useState(null);
@@ -51,6 +51,7 @@ function Quiz() {
   const [allDisasters, setAllDisasters] = useState([]);
   const [createErrors, setCreateErrors] = useState({});
   const [updateErrors, setUpdateErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -134,6 +135,7 @@ function Quiz() {
   };
 
   const handleFormSubmit = async () => {
+    setIsSubmitting(true);
     try {
       const errors = {};
       if (!newQuizData.qname) {
@@ -151,6 +153,7 @@ function Quiz() {
      
       if (Object.keys(errors).length > 0) {
         setCreateErrors(errors);
+        setIsSubmitting(false);
         return; // Stop form submission if there are errors
       }
   
@@ -188,6 +191,8 @@ function Quiz() {
     } catch (error) {
 
       console.error("Error submitting form:", error);
+    } finally{
+      setIsSubmitting(false);
     }
   };
   const handleInputChange = (index, e) => {
@@ -266,6 +271,7 @@ const handleUpdateClick = async (row) => {
   };
   
   const handleUpdateSubmit = async () => {
+    setIsSubmitting(true);
     try {
       const errors = {};
       if (!updateQuizData.qname) {
@@ -283,6 +289,7 @@ const handleUpdateClick = async (row) => {
      
       if (Object.keys(errors).length > 0) {
         setUpdateErrors(errors);
+        setIsSubmitting(false);
         return; // Stop form submission if there are errors
       }
   
@@ -320,6 +327,8 @@ const handleUpdateClick = async (row) => {
       closeModalUpdate();
     } catch (error) {
       console.error("Error submitting update form:", error);
+    } finally{
+      setIsSubmitting(false);
     }
   };
   
@@ -395,6 +404,12 @@ const availableDisasters = allDisasters.filter(disaster => !updateQuizData.disas
                 </p>
               </CardHeader>
               <Modal isOpen={modalOpen} toggle={closeModal} className="modal-lg">
+              <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
                 <ModalHeader toggle={closeModal}>New Area</ModalHeader>
                 <ModalBody>
                   <Form>
@@ -471,8 +486,15 @@ const availableDisasters = allDisasters.filter(disaster => !updateQuizData.disas
                     </Button>
                   </Form>
                 </ModalBody>
+                </div>
               </Modal>
               <Modal isOpen={updateModalOpen} toggle={closeModalUpdate} className="modal-lg">
+              <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
   <ModalHeader toggle={closeModalUpdate}>Update Quiz</ModalHeader>
   <ModalBody>
     <Form>
@@ -544,6 +566,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateQuizData.disas
       <Button color="primary" onClick={handleUpdateSubmit}>Update</Button>
     </Form>
   </ModalBody>
+  </div>
 </Modal>
               <CardBody>
                 <Table responsive>

@@ -4,7 +4,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { getToken } from "../../utils/helpers";
 import axios from "axios";
-import { Typography } from "@mui/material";
+import { Typography, fabClasses } from "@mui/material";
 import {
   Card,
   CardHeader,
@@ -24,7 +24,7 @@ import {
   Button,
 } from "reactstrap";
 import { Carousel } from 'react-bootstrap';
-
+import { CircularProgress } from '@mui/material'; 
 function Disaster() {
   const [tableData, setTableData] = useState({});
   const [error, setError] = useState(null);
@@ -39,6 +39,7 @@ function Disaster() {
   const [updateId, setUpdateId] = useState(null);
   const [createErrors, setCreateErrors] = useState({}); // State to hold create form validation errors
   const [updateErrors, setUpdateErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (dataRefresh) {
@@ -111,6 +112,8 @@ function Disaster() {
     });
   };
   const handleFormSubmit = async () => {
+    setIsSubmitting(true);
+
     try {
         // Basic form validation
         const errors = {};
@@ -125,6 +128,8 @@ function Disaster() {
         }
         if (Object.keys(errors).length > 0) {
           setCreateErrors(errors);
+          setIsSubmitting(false);
+
           return; // Stop form submission if there are errors
         }
     
@@ -151,6 +156,9 @@ function Disaster() {
     } catch (error) {
 
       console.error("Error submitting form:", error);
+    }finally{
+      setIsSubmitting(false);
+
     }
   };
 
@@ -187,6 +195,8 @@ function Disaster() {
     openUpdateModal(row);
   };
   const handleUpdateSubmit = async () => {
+    setIsSubmitting(true);
+
     try {
       const errors = {};
       if (!newDisasterData.name) {
@@ -200,6 +210,8 @@ function Disaster() {
       }
       if (Object.keys(errors).length > 0) {
         setUpdateErrors(errors);
+        setIsSubmitting(false);
+
         return; // Stop form submission if there are errors
       }
       const config = {
@@ -231,6 +243,9 @@ function Disaster() {
       setDataRefresh(true);
     } catch (error) {
       console.error("Error submitting update:", error);
+    } finally{
+      setIsSubmitting(false);
+
     }
   };
   const handleImageChange = (e) => {
@@ -299,6 +314,12 @@ function Disaster() {
                 </p>
               </CardHeader>
               <Modal isOpen={modalOpen} toggle={closeModal} className="modal-lg">
+              <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
                 <ModalHeader toggle={closeModal}>New Disaster</ModalHeader>
                 <ModalBody>
                   <Form>
@@ -355,8 +376,15 @@ function Disaster() {
                     </Button>
                   </Form>
                 </ModalBody>
+                </div>
               </Modal>
               <Modal isOpen={updateModalOpen} toggle={closeUpdateModal} className="modal-lg">
+              <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
                 <ModalHeader toggle={closeUpdateModal}>Update Disaster</ModalHeader>
                 <ModalBody>
                   <Form>
@@ -417,6 +445,7 @@ function Disaster() {
                     </Button>
                   </Form>
                 </ModalBody>
+                </div>
               </Modal>
               <CardBody>
                 <Table responsive>

@@ -4,7 +4,9 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { getToken } from "../../utils/helpers";
 import Select from 'react-select';
-import { Video } from '@mui/material';
+import { CircularProgress } from '@mui/material'; 
+import { Video,Typography } from '@mui/material';
+
 import axios from "axios";
 import {
   Card,
@@ -46,7 +48,9 @@ function Infographic() {
     disasterProne: []
   });
   const [allDisasters, setAllDisasters] = useState([]);
-
+  const [createErrors, setCreateErrors] = useState({});
+  const [updateErrors, setUpdateErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -117,6 +121,7 @@ function Infographic() {
     }
   };
   const closeModal = () => {
+    setCreateErrors({});
     setModalOpen(false);
   };
   const handleVideoChangeCreate = (e) => {
@@ -130,6 +135,23 @@ function Infographic() {
   
   const handleFormSubmit = async () => {
     try {
+      setIsSubmitting(true);
+      const errors = {};
+      if (!newMediaData.mname) {
+        errors.mname = "Name is required";
+      }
+      if (newMediaData.disasterProne.length === 0) {
+        errors.disasterProne = "Please select at least one disaster";
+      }
+      if (!Array.isArray(newMediaData.mvideo) || newMediaData.mvideo.length === 0) {  // <-- Error occurs here
+        errors.mvideo = "Please select at least one video";
+      }
+      if (Object.keys(errors).length > 0) {
+        setCreateErrors(errors);
+        setIsSubmitting(false); 
+        return; // Stop form submission if there are errors
+      }
+    
       const config = {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -150,13 +172,17 @@ function Infographic() {
   
       const response = await axios.post("http://localhost:4001/api/v1/admin/media/new", formData, config);
       setSelectedDisasters([]);
+
       setDataRefresh(true);
   
       console.log(response.data);
   
       closeModal();
     } catch (error) {
+
       console.error("Error submitting form:", error);
+    }finally{
+      setIsSubmitting(false); 
     }
   };
 
@@ -184,6 +210,7 @@ function Infographic() {
   };
   
   const closeModalUpdate = () => {
+    setUpdateErrors({})
     setUpdateModalOpen(false);
   };
   
@@ -218,6 +245,22 @@ const handleVideoChangeUpdate = (e) => {
   
   // Updated handleUpdateSubmit function
   const handleUpdateSubmit = async () => {
+    const errors = {};
+    setIsSubmitting(true);
+    if (!updateMediaData.mname) {
+      errors.mname = "Name is required";
+    }
+    if (updateMediaData.disasterProne.length === 0) {
+      errors.disasterProne = "Please select at least one disaster";
+    }
+    if (!Array.isArray(updateMediaData.mvideo) || updateMediaData.mvideo.length === 0) {  // <-- Error occurs here
+      errors.mvideo = "Please select at least one video";
+    }
+    if (Object.keys(errors).length > 0) {
+      setUpdateErrors(errors);
+      setIsSubmitting(false);
+      return; // Stop form submission if there are errors
+    }
     try {
       const formData = new FormData();
       formData.append("mname", updateMediaData.mname);
@@ -245,6 +288,8 @@ const handleVideoChangeUpdate = (e) => {
       window.location.reload();
     } catch (error) {
       console.error("Error submitting update form:", error);
+    } finally{
+      setIsSubmitting(false);
     }
   };
   const handleSelectChangeUpdate = (selectedOptions) => {
@@ -307,6 +352,8 @@ const availableDisasters = allDisasters.filter(disaster => !updateMediaData.disa
 
     
       <div className="content">
+   
+
         <Row>
           <Col md="12">
             <Card className="card-plain">
@@ -321,48 +368,64 @@ const availableDisasters = allDisasters.filter(disaster => !updateMediaData.disa
                   Videos with learnings.
                 </p>
               </CardHeader>
-             <Modal isOpen={modalOpen} toggle={closeModal} className="modal-lg">
-                <ModalHeader toggle={closeModal}>New Infographic</ModalHeader>
-                <ModalBody>
-                  <Form>
-                    <FormGroup>
-                      <Label for="mname">Name</Label>
-                      <Input
-                        type="text"
-                        id="mname"
-                        value={newMediaData.mname}
-                        onChange={(e) =>
-                          setNewMediaData({ ...newMediaData, mname: e.target.value })
-                        }
-                      />
-                    </FormGroup>
-                    <FormGroup>
-                      <Label for="images">Video</Label>
-                      <Input
-                       type="file" accept="video/*" onChange={handleVideoChangeCreate} multiple
-                      />
-                     {newMediaData.videoPreviews &&
-    newMediaData.videoPreviews.map((preview, index) => (
-      <video key={index} controls width="100" height="auto">
-        <source src={preview} type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
-    ))}
-                    </FormGroup>
-                    <Select
-                      options={Array.isArray(disasters) ? disasters.map(disaster => ({ value: disaster.name, label: disaster.name })) : []}
-                      value={selectedDisasters.map(disaster => ({ value: disaster, label: disaster }))}
-                      onChange={handleSelectChange}
-                      isMulti
-                    />
-                    <Button color="primary" onClick={handleFormSubmit}>
-                      Submit
-                    </Button>
-                  </Form>
-                </ModalBody>
-              </Modal>
+              <Modal isOpen={modalOpen} toggle={closeModal} className="modal-lg">
+  <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
+    <ModalHeader toggle={closeModal}>New Infographic</ModalHeader>
+    <ModalBody>
+      <Form>
+        <FormGroup>
+          <Label for="mname">Name</Label>
+          <Input
+            type="text"
+            id="mname"
+            value={newMediaData.mname}
+            onChange={(e) =>
+              setNewMediaData({ ...newMediaData, mname: e.target.value })
+            }
+          />
+          <Typography> {createErrors.mname && <span className="text-danger">{createErrors.mname}</span>}</Typography>
+        </FormGroup>
+        <FormGroup>
+          <Label for="images">Video</Label>
+          <Input
+            type="file" accept="video/*" onChange={handleVideoChangeCreate} multiple
+          />
+          <Typography> {createErrors.mvideo && <span className="text-danger">{createErrors.mvideo}</span>}</Typography>
+          {newMediaData.videoPreviews &&
+            newMediaData.videoPreviews.map((preview, index) => (
+              <video key={index} controls width="100" height="auto">
+                <source src={preview} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            ))}
+        </FormGroup>
+        <Select
+          options={Array.isArray(disasters) ? disasters.map(disaster => ({ value: disaster.name, label: disaster.name })) : []}
+          value={selectedDisasters.map(disaster => ({ value: disaster, label: disaster }))}
+          onChange={handleSelectChange}
+          isMulti
+        />
+        <Typography> {createErrors.disasterProne && <span className="text-danger">{createErrors.disasterProne}</span>}</Typography>
+        <Button color="primary" onClick={handleFormSubmit}>
+          Submit
+        </Button>
+      </Form>
+    </ModalBody>
+  </div>
+</Modal>
                
               <Modal isOpen={updateModalOpen} toggle={closeModalUpdate} className="modal-lg">
+              <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
                 <ModalHeader toggle={closeModalUpdate}>Update Area</ModalHeader>
                 <ModalBody>
                   <Form>
@@ -376,6 +439,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateMediaData.disa
                           setUpdateMediaData({ ...updateMediaData, mname: e.target.value })
                         }
                       />
+                      <Typography> {updateErrors.mname && <span className="text-danger">{updateErrors.mname}</span>}</Typography>
                     </FormGroup> 
                     <FormGroup>
   <Label for="mvideo">Video</Label>
@@ -386,6 +450,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateMediaData.disa
     onChange={handleVideoChangeUpdate}
     accept="video/*"
   />
+  <Typography> {updateErrors.mvideo && <span className="text-danger">{updateErrors.mvideo}</span>}</Typography>
   {updateMediaData.videoPreviews && updateMediaData.videoPreviews.length > 0 ? (
     updateMediaData.videoPreviews.map((preview, index) => (
       <div key={index}>
@@ -406,12 +471,14 @@ const availableDisasters = allDisasters.filter(disaster => !updateMediaData.disa
     onChange={handleSelectChangeUpdate}
     isMulti
   />
+  <Typography> {updateErrors.disasterProne && <span className="text-danger">{updateErrors.disasterProne}</span>}</Typography>
 </FormGroup>
                     <Button color="primary" onClick={handleUpdateSubmit}>
                       Update
                     </Button>
                   </Form>
                 </ModalBody>
+                </div>
               </Modal>
               <CardBody>
               <Table responsive>
@@ -453,14 +520,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateMediaData.disa
                             Update
                           </Button>
                         </td>
-                        {/* <td>
-                          <Button
-                            color="danger"
-                            onClick={() => handleDeleteClick(row)}
-                          >
-                            Delete
-                          </Button>
-                        </td>  */}
+                        
       </tr>
     ))}
   </tbody>

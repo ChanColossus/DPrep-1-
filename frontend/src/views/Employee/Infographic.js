@@ -4,6 +4,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { getToken } from "../../utils/helpers";
 import Select from 'react-select';
+import { Typography } from "@mui/material";
 import axios from "axios";
 import {
   Card,
@@ -24,6 +25,7 @@ import {
   Button,
 } from "reactstrap";
 import { Carousel } from 'react-bootstrap';
+import { CircularProgress } from '@mui/material'; 
 
 function Infographic() {
   const [tableData, setTableData] = useState({});
@@ -45,7 +47,9 @@ function Infographic() {
     disasterProne: []
   });
   const [allDisasters, setAllDisasters] = useState([]);
-
+  const [createErrors, setCreateErrors] = useState({});
+  const [updateErrors, setUpdateErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -115,7 +119,9 @@ function Infographic() {
       console.error("Error opening modal:", error);
     }
   };
-  const closeModal = () => {
+  const closeModal = () => 
+  {
+    setCreateErrors({});
     setModalOpen(false);
   };
   const handleImageChangeCreate = (e) => {
@@ -127,7 +133,24 @@ function Infographic() {
     });
   };
   const handleFormSubmit = async () => {
+    setIsSubmitting(true);
     try {
+      const errors = {};
+      if (!newInfographicData.gname) {
+        errors.gname = "Name is required";
+      }
+      if (newInfographicData.disasterProne.length === 0) {
+        errors.disasterProne = "Please select at least one disaster";
+      }
+      if (!Array.isArray(newInfographicData.gimages) || newInfographicData.gimages.length === 0) {  // <-- Error occurs here
+        errors.gimages = "Please select at least one image";
+      }
+      if (Object.keys(errors).length > 0) {
+        setCreateErrors(errors);
+        setIsSubmitting(false);
+        return; // Stop form submission if there are errors
+      }
+  
       const config = {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -158,6 +181,8 @@ function Infographic() {
     } catch (error) {
 
       console.error("Error submitting form:", error);
+    } finally{
+      setIsSubmitting(false);
     }
   };
 
@@ -185,6 +210,7 @@ function Infographic() {
   };
   
   const closeModalUpdate = () => {
+    setUpdateErrors({});
     setUpdateModalOpen(false);
   };
   
@@ -210,7 +236,24 @@ function Infographic() {
 };
   
 const handleUpdateSubmit = async () => {
+  setIsSubmitting(true);
   try {
+    const errors = {};
+    if (!updateInfographicData.gname) {
+      errors.gname = "Name is required";
+    }
+    if (updateInfographicData.disasterProne.length === 0) {
+      errors.disasterProne = "Please select at least one disaster";
+    }
+    if (!Array.isArray(updateInfographicData.gimages) || updateInfographicData.gimages.length === 0) {  // <-- Error occurs here
+      errors.gimages = "Please select at least one image";
+    }
+    if (Object.keys(errors).length > 0) {
+      setUpdateErrors(errors);
+      setIsSubmitting(false);
+      return; // Stop form submission if there are errors
+    }
+
     const config = {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -244,6 +287,8 @@ const handleUpdateSubmit = async () => {
     closeModalUpdate();
   } catch (error) {
     console.error("Error submitting update form:", error);
+  } finally{
+    setIsSubmitting(false);
   }
 };
   
@@ -322,6 +367,12 @@ const availableDisasters = allDisasters.filter(disaster => !updateInfographicDat
                 </p>
               </CardHeader>
              <Modal isOpen={modalOpen} toggle={closeModal} className="modal-lg">
+             <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
                 <ModalHeader toggle={closeModal}>New Infographic</ModalHeader>
                 <ModalBody>
                   <Form>
@@ -335,6 +386,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateInfographicDat
                           setNewInfographicData({ ...newInfographicData, gname: e.target.value })
                         }
                       />
+                       <Typography> {createErrors.gname && <span className="text-danger">{createErrors.gname}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
                       <Label for="images">Images</Label>
@@ -345,6 +397,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateInfographicDat
                         onChange={handleImageChangeCreate}
                         accept="image/*"
                       />
+                       <Typography> {createErrors.gimages && <span className="text-danger">{createErrors.gimages}</span>}</Typography>
                       {newInfographicData.imagePreviews &&
                         newInfographicData.imagePreviews.map((preview, index) => (
                           <img
@@ -361,14 +414,22 @@ const availableDisasters = allDisasters.filter(disaster => !updateInfographicDat
                       onChange={handleSelectChange}
                       isMulti
                     />
+                     <Typography> {createErrors.disasterProne && <span className="text-danger">{createErrors.disasterProne}</span>}</Typography>
                     <Button color="primary" onClick={handleFormSubmit}>
                       Submit
                     </Button>
                   </Form>
                 </ModalBody>
+                </div>
               </Modal>
                
               <Modal isOpen={updateModalOpen} toggle={closeModalUpdate} className="modal-lg">
+              <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
                 <ModalHeader toggle={closeModalUpdate}>Update Area</ModalHeader>
                 <ModalBody>
                   <Form>
@@ -382,6 +443,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateInfographicDat
                           setUpdateInfographicData({ ...updateInfographicData, gname: e.target.value })
                         }
                       />
+                        <Typography> {updateErrors.gname && <span className="text-danger">{updateErrors.gname}</span>}</Typography>
                     </FormGroup> 
                     <FormGroup>
                       <Label for="gimages">Images</Label>
@@ -392,6 +454,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateInfographicDat
                         onChange={handleImageChangeUpdate}
                         accept="image/*"
                       />
+                      <Typography> {updateErrors.gimages && <span className="text-danger">{updateErrors.gimages}</span>}</Typography>
                        {
                         updateInfographicData.gimages && updateInfographicData.gimages.length > 0 ? (
                             updateInfographicData.gimages.map((image, index) => (
@@ -413,12 +476,14 @@ const availableDisasters = allDisasters.filter(disaster => !updateInfographicDat
     onChange={handleSelectChangeUpdate}
     isMulti
   />
+  <Typography> {updateErrors.disasterProne && <span className="text-danger">{updateErrors.disasterProne}</span>}</Typography>
 </FormGroup>
                     <Button color="primary" onClick={handleUpdateSubmit}>
                       Update
                     </Button>
                   </Form>
                 </ModalBody>
+                </div>
               </Modal>
               <CardBody>
                 <Table responsive>
@@ -464,14 +529,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateInfographicDat
                             Update
                           </Button>
                         </td>
-                        {/* <td>
-                          <Button
-                            color="danger"
-                            onClick={() => handleDeleteClick(row)}
-                          >
-                            Delete
-                          </Button>
-                        </td>  */}
+                        
                       </tr>
                     ))}
                   </tbody>

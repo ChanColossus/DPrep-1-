@@ -20,7 +20,7 @@ import {
     Button,
 } from "reactstrap";
 import { Typography } from "@mui/material";
-
+import { CircularProgress } from '@mui/material'; 
 function Report() {
     const [tableData, setTableData] = useState({});
     const [error, setError] = useState(null);
@@ -48,6 +48,8 @@ function Report() {
     const [createErrors, setCreateErrors] = useState({});
     const [updateErrors, setUpdateErrors] = useState({});
   
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
     useEffect(() => {
         if (dataRefresh) {
             // Fetch data again
@@ -120,6 +122,7 @@ function Report() {
         setModalOpen(false);
     };
     const handleFormSubmit = async () => {
+        setIsSubmitting(true);
         try {
 
             const errors = {};
@@ -150,6 +153,7 @@ function Report() {
               }
             if (Object.keys(errors).length > 0) {
               setCreateErrors(errors);
+              setIsSubmitting(false);
               return; // Stop form submission if there are errors
             }
         
@@ -172,6 +176,8 @@ function Report() {
             closeModal();
         } catch (error) {
             console.error("Error submitting form:", error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -225,6 +231,7 @@ function Report() {
     };
 
     const handleUpdateSubmit = async () => {
+        setIsSubmitting(true);
         try {
             const errors = {};
             if (!updateReportData.date) {
@@ -250,6 +257,7 @@ function Report() {
         if (selectedDate > currentDate) {
             errors.date = "Date cannot be in the future";
             setUpdateErrors(errors);
+            setIsSubmitting(false);
             return; // Stop form submission if there are errors
         }
             if (Object.keys(errors).length > 0) {
@@ -285,6 +293,8 @@ function Report() {
             closeUpdateModal();
         } catch (error) {
             console.error("Error submitting form:", error);
+        } finally{
+            setIsSubmitting(false);
         }
     };
     const handleDeleteClick = async (row) => {
@@ -329,6 +339,12 @@ function Report() {
                                 </p>
                             </CardHeader>
                             <Modal isOpen={updateModalOpen} toggle={closeUpdateModal} className="modal-lg">
+                            <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
                                 <ModalHeader toggle={closeUpdateModal}>Update Report</ModalHeader>
                                 <ModalBody>
                                     <Form>
@@ -415,8 +431,15 @@ function Report() {
                                         </Button>
                                     </Form>
                                 </ModalBody>
+                                </div>
                             </Modal>
                             <Modal isOpen={modalOpen} toggle={closeModal} className="modal-lg">
+                            <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
                                 <ModalHeader toggle={closeModal}>New Report</ModalHeader>
                                 <ModalBody>
                                     <Form>
@@ -501,6 +524,7 @@ function Report() {
                                         </Button>
                                     </Form>
                                 </ModalBody>
+                                </div>
                             </Modal>
 
                             <CardBody>

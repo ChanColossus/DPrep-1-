@@ -24,9 +24,10 @@ import {
   Button,
 } from "reactstrap";
 import { Carousel } from 'react-bootstrap';
-import { Typography } from "@mui/material";
+import { Typography,CircularProgress } from "@mui/material";
 
 function Area() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [tableData, setTableData] = useState({});
   const [error, setError] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -55,7 +56,7 @@ function Area() {
     bimages: '',
     disasterProne: ''
   });
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -71,6 +72,7 @@ function Area() {
         setAllDisasters(response.data.disasters);
         // Reset the data refresh state
         console.log("Updated Area Data:", updateAreaData);
+        console.log(isSubmitting)
         setDataRefresh(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -81,7 +83,7 @@ function Area() {
     if (dataRefresh) {
       fetchData();
     }
-  }, [dataRefresh,updateAreaData]);
+  }, [dataRefresh,updateAreaData,isSubmitting]);
   console.log(tableData)
   console.log(tableData.area)
 
@@ -141,7 +143,9 @@ function Area() {
   };
   
   const handleFormSubmit = async () => {
+    setIsSubmitting(true);
     try {
+      
       // Basic form validation
       const errors = {};
     if (!newAreaData.bname) {
@@ -158,6 +162,7 @@ function Area() {
     }
     if (Object.keys(errors).length > 0) {
       setCreateErrors(errors);
+      setIsSubmitting(false);
       return; // Stop form submission if there are errors
     }
 
@@ -193,6 +198,8 @@ function Area() {
     } catch (error) {
 
       console.error("Error submitting form:", error);
+    }finally{
+      setIsSubmitting(false);
     }
   };
 
@@ -281,16 +288,21 @@ const validateUpdateForm = () => {
       bimages: '',
       disasterProne: ''
     });
+    
   } else {
     setUpdateErrors(errors);
+    
   }
 
   return valid; // Return false when there's an error
 };
 const handleUpdateSubmit = async () => {
+  setIsSubmitting(true);
   try {
+    
     if (!validateUpdateForm()) {
       // Stop form submission if validation fails
+      setIsSubmitting(false);
       return;
     }
     const config = {
@@ -330,6 +342,8 @@ const handleUpdateSubmit = async () => {
     closeModalUpdate();
   } catch (error) {
     console.error("Error submitting update form:", error);
+  } finally{
+    setIsSubmitting(false);
   }
 };
   
@@ -408,6 +422,12 @@ const availableDisasters = allDisasters.filter(disaster => !updateAreaData.disas
                 </p>
               </CardHeader>
               <Modal isOpen={modalOpen} toggle={closeModal} className="modal-lg">
+              <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
                 <ModalHeader toggle={closeModal}>New Area</ModalHeader>
                 <ModalBody>
                   <Form>
@@ -474,8 +494,15 @@ const availableDisasters = allDisasters.filter(disaster => !updateAreaData.disas
                     </Button>
                   </Form>
                 </ModalBody>
+                </div>
               </Modal>
               <Modal isOpen={updateModalOpen} toggle={closeModalUpdate} className="modal-lg">
+              <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
                 <ModalHeader toggle={closeModalUpdate}>Update Area</ModalHeader>
                 <ModalBody>
                   <Form>
@@ -545,6 +572,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateAreaData.disas
                     </Button>
                   </Form>
                 </ModalBody>
+                </div>
               </Modal>
               <CardBody>
                 <Table responsive>

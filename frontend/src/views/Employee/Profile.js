@@ -13,8 +13,9 @@ import {
   Row,
   Col,
 } from "reactstrap";
+import { Typography } from "@mui/material";
 import { getToken } from "../../utils/helpers";
-
+import { CircularProgress } from '@mui/material'; 
 function User() {
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
@@ -28,7 +29,9 @@ function User() {
     role: '',
   });
   const [avatarFile, setAvatarFile] = useState(null);
+  const [updateErrors, setUpdateErrors] = useState({});
   let navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const getProfile = async () => {
@@ -45,12 +48,12 @@ function User() {
           name: data.user.name,
           email: data.user.email,
           contact: data.user.contact,
-          password:data.user.password,
           age: data.user.age,
           gender: data.user.gender,
           work: data.user.work,
           role: data.user.role,
         }));
+        setUpdateErrors({});
       } catch (error) {
         console.log(error);
       }
@@ -73,10 +76,33 @@ function User() {
   };
 
   const updateProfile = async (e) => {
+    setIsSubmitting(true);
     e.preventDefault();
     const userId = user._id;
     
     const updatedData = { ...formData };
+    const errors = {};
+    if (!updatedData.name) {
+      errors.name = "Name is required";
+    }
+    if (!updatedData.contact) {
+      errors.contact = "Contact is required";
+    }
+    if (!updatedData.age) {
+      errors.age = "Age is required";
+    }
+    if (!updatedData.gender) {
+      errors.gender = "Gender is required";
+    }
+    if (!updatedData.work) {
+      errors.work = "Work is required";
+    }
+    
+    if (Object.keys(errors).length > 0) {
+      setUpdateErrors(errors);
+      setIsSubmitting(false);
+      return; // Stop form submission if there are errors
+    }
 
     const config = {
       headers: {
@@ -99,11 +125,19 @@ function User() {
       window.location.reload();
     } catch (error) {
       console.error("Error updating profile:", error);
+    } finally{
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="content">
+      <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
       {user && (
         <Row>
            <Col md="4">
@@ -159,6 +193,7 @@ function User() {
                           type="text"
                           onChange={handleInputChange}
                         />
+                         <Typography> {updateErrors.name && <span className="text-danger">{updateErrors.name}</span>}</Typography>
                       </FormGroup>
                     </Col>
                   </Row>
@@ -173,6 +208,7 @@ function User() {
                           type="number"
                           onChange={handleInputChange}
                         />
+                         <Typography> {updateErrors.contact && <span className="text-danger">{updateErrors.contact}</span>}</Typography>
                       </FormGroup>
                     </Col>
                     <Col className="pl-1" md="6">
@@ -185,6 +221,7 @@ function User() {
                           type="number"
                           onChange={handleInputChange}
                         />
+                          <Typography> {updateErrors.age && <span className="text-danger">{updateErrors.age}</span>}</Typography>
                       </FormGroup>
                     </Col>
                   </Row>
@@ -202,6 +239,7 @@ function User() {
                           <option value="Female">Female</option>
                           <option value="Rather not say">Rather not say</option>
                         </Input>
+                        <Typography> {updateErrors.gender && <span className="text-danger">{updateErrors.gender}</span>}</Typography>
                       </FormGroup>
                     </Col>
                     <Col className="pl-1" md="6">
@@ -217,23 +255,13 @@ function User() {
                           <option value="Teacher">Teacher</option>
                           <option value="Others">Others</option>
                         </Input>
+                        <Typography> {updateErrors.work && <span className="text-danger">{updateErrors.work}</span>}</Typography>
                       </FormGroup>
                     </Col>
                   </Row>
                   <Row>
-                    <Col className="pr-1" md="6">
-                      <FormGroup>
-                        <label>Password</label>
-                        <Input
-                          name="password"
-                          value={formData.password}
-                          placeholder="Password"
-                          type="password"
-                          onChange={handleInputChange}
-                        />
-                      </FormGroup>
-                    </Col>
-                    <Col className="pl-1" md="6">
+                    
+                    <Col className="pl-9" md="12">
                       <FormGroup>
                         <label>Role</label>
                         <Input
@@ -273,6 +301,7 @@ function User() {
                             id="avatar-input"
                             accept="image/*"
                           />
+                           
                           <label htmlFor="avatar-input" className="btn btn-primary mb-0 mr-2">Choose File</label>
                           <div className="position-relative">
                             {avatarFile && (
@@ -309,6 +338,7 @@ function User() {
           </Col>
         </Row>
       )}
+      </div>
     </div>
   );
 }

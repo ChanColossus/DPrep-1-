@@ -24,7 +24,7 @@ import {
 } from "reactstrap";
 import { Typography } from "@mui/material";
 import { Carousel } from 'react-bootstrap';
-
+import { CircularProgress } from '@mui/material'; 
 function User() {
   const [tableData, setTableData] = useState({});
   const [error, setError] = useState(null);
@@ -44,6 +44,7 @@ function User() {
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [updateId, setUpdateId] = useState(null);
   const [createErrors, setCreateErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
     if (dataRefresh) {
       // Fetch data again
@@ -121,6 +122,8 @@ function User() {
     });
   };
   const handleFormSubmit = async () => {
+    setIsSubmitting(true);
+
     try {
       const errors = {};
       if (!newUserData.name) {
@@ -152,6 +155,8 @@ function User() {
       }
       if (Object.keys(errors).length > 0) {
         setCreateErrors(errors);
+        setIsSubmitting(false);
+
         return; // Stop form submission if there are errors
       }
   
@@ -186,6 +191,9 @@ function User() {
     } catch (error) {
 
       console.error("Error submitting form:", error);
+    } finally{
+      setIsSubmitting(false);
+
     }
   };
   const handleGenderChange = (e) => {
@@ -212,6 +220,8 @@ function User() {
   };
 
   const updateUserRoleToEmployee = async (row) => {
+    setIsSubmitting(true);
+
     try {
       const response = await axios.put(`http://localhost:4001/api/v1/updateRoleE/${row._id}`);
       console.log(response.data.message);
@@ -220,9 +230,14 @@ function User() {
     } catch (error) {
       console.error("Error updating user role:", error);
       // Optionally, you can handle error message or update UI accordingly
+    } finally{
+      setIsSubmitting(false);
+
     }
   };
   const updateUserRoleToUser = async (row) => {
+    setIsSubmitting(true);
+
     try {
       const response = await axios.put(`http://localhost:4001/api/v1/updateRoleU/${row._id}`);
       console.log(response.data.message);
@@ -231,9 +246,14 @@ function User() {
     } catch (error) {
       console.error("Error updating user role:", error);
       // Optionally, you can handle error message or update UI accordingly
+    } finally{
+      setIsSubmitting(false);
+
     }
   };
   const updateUserRoleToAdmin = async (row) => {
+    setIsSubmitting(true);
+
     try {
       const response = await axios.put(`http://localhost:4001/api/v1/updateRoleA/${row._id}`);
       console.log(response.data.message);
@@ -242,6 +262,9 @@ function User() {
     } catch (error) {
       console.error("Error updating user role:", error);
       // Optionally, you can handle error message or update UI accordingly
+    } finally{
+      setIsSubmitting(false);
+
     }
   };
 
@@ -287,6 +310,12 @@ function User() {
                 </p>
               </CardHeader>
               <Modal isOpen={modalOpen} toggle={closeModal} className="modal-lg">
+              <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
                 <ModalHeader toggle={closeModal}>New User</ModalHeader>
                 <ModalBody>
                   <Form>
@@ -433,6 +462,7 @@ function User() {
                     </Button>
                   </Form>
                 </ModalBody>
+                </div>
               </Modal>
              
               <CardBody>

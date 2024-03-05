@@ -19,14 +19,14 @@ import {
     Input,
     Button,
 } from "reactstrap";
-
-
+import { Typography } from "@mui/material";
+import { CircularProgress } from '@mui/material'; 
 function Report() {
     const [tableData, setTableData] = useState({});
     const [error, setError] = useState(null);
     const [modalOpen, setModalOpen] = useState(false);
     const [newReportData, setNewReportData] = useState({
-        date: new Date(), // Initialize with the current date
+        date: null, // Initialize with the current date
         disaster: null,
         area: null,
         affectedPersons: 0,
@@ -45,6 +45,10 @@ function Report() {
     const [updateId, setUpdateId] = useState(null);
     const [disasters, setDisasters] = useState([]);
     const [areas, setAreas] = useState([]);
+    const [createErrors, setCreateErrors] = useState({});
+    const [updateErrors, setUpdateErrors] = useState({});
+  
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         if (dataRefresh) {
@@ -105,7 +109,7 @@ function Report() {
     const openModal = () => {
         setModalOpen(true);
         setNewReportData({
-            date: new Date(), // Initialize with the current date
+            date: null, // Initialize with the current date
             disaster: null,
             area: null,
             affectedPersons: 0,
@@ -114,10 +118,45 @@ function Report() {
         });
     };
     const closeModal = () => {
+        setCreateErrors({});
         setModalOpen(false);
     };
     const handleFormSubmit = async () => {
+        setIsSubmitting(true);
         try {
+
+            const errors = {};
+            if (!newReportData.date) {
+              errors.date = "Date is required";
+            }
+            console.log(newReportData)
+            console.log(errors)
+            if (!newReportData.disaster) {
+              errors.disaster = "Disaster is required";
+            }
+          
+            if (!newReportData.area) {
+                errors.area = "Area is required";
+              }
+              if (!newReportData.affectedPersons) {
+                errors.affectedPersons = "Affected Persons is required";
+              }
+              if (!newReportData.casualties) {
+                errors.casualties = "Casualties is required";
+              }
+              const currentDate = new Date();
+              const selectedDate = new Date(newReportData.date);
+              if (selectedDate > currentDate) {
+                  errors.date = "Date cannot be in the future";
+                  setCreateErrors(errors);
+                  return; // Stop form submission if there are errors
+              }
+            if (Object.keys(errors).length > 0) {
+              setCreateErrors(errors);
+              setIsSubmitting(false);
+              return; // Stop form submission if there are errors
+            }
+        
             const formData = {
                 date: newReportData.date,
                 disaster: newReportData.disaster,
@@ -137,6 +176,8 @@ function Report() {
             closeModal();
         } catch (error) {
             console.error("Error submitting form:", error);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -184,12 +225,47 @@ function Report() {
     };
 
     const closeUpdateModal = () => {
+        setUpdateErrors({});
         setUpdateModalOpen(false);
         setUpdateId(null);
     };
 
     const handleUpdateSubmit = async () => {
+        setIsSubmitting(true);
         try {
+            const errors = {};
+            if (!updateReportData.date) {
+              errors.date = "Date is required";
+            }
+            if (!updateReportData.disaster) {
+              errors.disaster = "Disaster is required";
+            }
+          
+            if (!updateReportData.area) {
+                errors.area = "Area is required";
+              }
+              if (!updateReportData.affectedPersons) {
+                errors.affectedPersons = "Affected Persons is required";
+              }
+              if (!updateReportData.casualties) {
+                errors.casualties = "Casualties is required";
+              }
+              const currentDate = new Date();
+        const selectedDate = new Date(updateReportData.date);
+        console.log(selectedDate)
+      
+        if (selectedDate > currentDate) {
+            errors.date = "Date cannot be in the future";
+            setUpdateErrors(errors);
+            setIsSubmitting(false);
+            return; // Stop form submission if there are errors
+        }
+            if (Object.keys(errors).length > 0) {
+                
+              setUpdateErrors(errors);
+              return; // Stop form submission if there are errors
+            }
+          
             console.log("Data:",updateReportData)
             const config = {
                 headers: {
@@ -197,6 +273,7 @@ function Report() {
                   Authorization: `Bearer ${getToken()}`,
                 },
               };
+              
             const formData = {
                 date: updateReportData.date,
                 disaster: updateReportData.disaster,
@@ -216,6 +293,8 @@ function Report() {
             closeUpdateModal();
         } catch (error) {
             console.error("Error submitting form:", error);
+        } finally{
+            setIsSubmitting(false);
         }
     };
     const handleDeleteClick = async (row) => {
@@ -260,6 +339,12 @@ function Report() {
                                 </p>
                             </CardHeader>
                             <Modal isOpen={updateModalOpen} toggle={closeUpdateModal} className="modal-lg">
+                            <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
                                 <ModalHeader toggle={closeUpdateModal}>Update Report</ModalHeader>
                                 <ModalBody>
                                     <Form>
@@ -276,6 +361,7 @@ function Report() {
                                                     setUpdateReportData({ ...updateReportData, date: e.target.value })
                                                 }
                                             />
+                                             <Typography> {updateErrors.date && <span className="text-danger">{updateErrors.date}</span>}</Typography>
                                         </FormGroup>
                                         <FormGroup>
                                             <Label for="disaster">Disaster</Label>
@@ -293,6 +379,7 @@ function Report() {
                                                     <option key={disaster._id} value={disaster._id}>{disaster.name}</option>
                                                 ))}
                                             </Input>
+                                            <Typography> {updateErrors.disaster && <span className="text-danger">{updateErrors.disaster}</span>}</Typography>
                                         </FormGroup>
                                         <FormGroup>
                                             <Label for="area">Area</Label>
@@ -310,6 +397,7 @@ function Report() {
                                                     <option key={area._id} value={area._id}>{area.bname}</option>
                                                 ))}
                                             </Input>
+                                            <Typography> {updateErrors.area && <span className="text-danger">{updateErrors.area}</span>}</Typography>
                                         </FormGroup>
                                         <FormGroup>
                                             <Label for="affectedPersons">Affected Persons</Label>
@@ -322,6 +410,7 @@ function Report() {
                                                     setUpdateReportData({ ...updateReportData, affectedPersons: e.target.value })
                                                 }
                                             />
+                                            <Typography> {updateErrors.affectedPersons && <span className="text-danger">{updateErrors.affectedPersons}</span>}</Typography>
                                         </FormGroup>
                                         <FormGroup>
                                             <Label for="casualties">Casualties</Label>
@@ -334,6 +423,7 @@ function Report() {
                                                     setUpdateReportData({ ...updateReportData, casualties: e.target.value })
                                                 }
                                             />
+                                            <Typography> {updateErrors.casualties && <span className="text-danger">{updateErrors.casualties}</span>}</Typography>
                                         </FormGroup>
 
                                         <Button color="primary" onClick={handleUpdateSubmit}>
@@ -341,8 +431,15 @@ function Report() {
                                         </Button>
                                     </Form>
                                 </ModalBody>
+                                </div>
                             </Modal>
                             <Modal isOpen={modalOpen} toggle={closeModal} className="modal-lg">
+                            <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
                                 <ModalHeader toggle={closeModal}>New Report</ModalHeader>
                                 <ModalBody>
                                     <Form>
@@ -357,6 +454,7 @@ function Report() {
                                                     setNewReportData({ ...newReportData, date: e.target.value })
                                                 }
                                             />
+                                            <Typography> {createErrors.date && <span className="text-danger">{createErrors.date}</span>}</Typography>
                                         </FormGroup>
 
                                         <FormGroup>
@@ -375,6 +473,7 @@ function Report() {
                                                     <option key={disaster._id} value={disaster._id}>{disaster.name}</option>
                                                 ))}
                                             </Input>
+                                            <Typography> {createErrors.disaster && <span className="text-danger">{createErrors.disaster}</span>}</Typography>
                                         </FormGroup>
                                         <FormGroup>
                                             <Label for="area">Area</Label>
@@ -392,6 +491,7 @@ function Report() {
                                                     <option key={area._id} value={area._id}>{area.bname}</option>
                                                 ))}
                                             </Input>
+                                            <Typography> {createErrors.area && <span className="text-danger">{createErrors.area}</span>}</Typography>
                                         </FormGroup>
                                         <FormGroup>
                                             <Label for="affectedPersons">Affected Persons</Label>
@@ -404,6 +504,7 @@ function Report() {
                                                     setNewReportData({ ...newReportData, affectedPersons: e.target.value })
                                                 }
                                             />
+                                            <Typography> {createErrors.affectedPersons && <span className="text-danger">{createErrors.affectedPersons}</span>}</Typography>
                                         </FormGroup>
                                         <FormGroup>
                                             <Label for="casualties">Casualties</Label>
@@ -416,12 +517,14 @@ function Report() {
                                                     setNewReportData({ ...newReportData, casualties: e.target.value })
                                                 }
                                             />
+                                            <Typography> {createErrors.casualties && <span className="text-danger">{createErrors.casualties}</span>}</Typography>
                                         </FormGroup>
                                         <Button color="primary" onClick={handleFormSubmit}>
                                             Submit
                                         </Button>
                                     </Form>
                                 </ModalBody>
+                                </div>
                             </Modal>
 
                             <CardBody>
@@ -455,15 +558,7 @@ function Report() {
                                                         Update
                                                     </Button>
                                                 </td>
-                                                {/* <td>
-
-                                                    <Button
-                                                        color="danger"
-                                                        onClick={() => handleDeleteClick(row)}
-                                                    >
-                                                        Delete
-                                                    </Button>
-                                                </td> */}
+                                               
                                             </tr>
                                         ))}
                                     </tbody>

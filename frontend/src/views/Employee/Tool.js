@@ -5,6 +5,7 @@ import "slick-carousel/slick/slick-theme.css";
 import { getToken } from "../../utils/helpers";
 import Select from 'react-select';
 import axios from "axios";
+import { Typography } from "@mui/material";
 import {
   Card,
   CardHeader,
@@ -24,7 +25,7 @@ import {
   Button,
 } from "reactstrap";
 import { Carousel } from 'react-bootstrap';
-
+import { CircularProgress } from '@mui/material'; 
 function Tool() {
   const [tableData, setTableData] = useState({});
   const [error, setError] = useState(null);
@@ -47,7 +48,9 @@ function Tool() {
     disasterTool: []
   });
   const [allDisasters, setAllDisasters] = useState([]);
-
+  const [createErrors, setCreateErrors] = useState({});
+  const [updateErrors, setUpdateErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -120,6 +123,7 @@ function Tool() {
     }
   };
   const closeModal = () => {
+    setCreateErrors({});
     setModalOpen(false);
   };
   const handleImageChangeCreate = (e) => {
@@ -131,7 +135,27 @@ function Tool() {
     });
   };
   const handleFormSubmit = async () => {
+    setIsSubmitting(true);
     try {
+      const errors = {};
+      if (!newToolData.tname) {
+        errors.tname = "Name is required";
+      }
+      if (!newToolData.tdescription) {
+        errors.tdescription = "Description is required";
+      }
+      if (newToolData.disasterTool.length === 0) {
+        errors.disasterTool = "Please select at least one disaster";
+      }
+      if (!Array.isArray(newToolData.timages) || newToolData.timages.length === 0) {  // <-- Error occurs here
+        errors.timages = "Please select at least one image";
+      }
+      if (Object.keys(errors).length > 0) {
+        setCreateErrors(errors);
+        setIsSubmitting(false);
+        return; // Stop form submission if there are errors
+      }
+  
       const config = {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -164,6 +188,8 @@ function Tool() {
     } catch (error) {
 
       console.error("Error submitting form:", error);
+    } finally{
+      setIsSubmitting(false);
     }
   };
 
@@ -191,6 +217,7 @@ function Tool() {
   };
   
   const closeModalUpdate = () => {
+    setUpdateErrors({});
     setUpdateModalOpen(false);
   };
   
@@ -216,7 +243,29 @@ function Tool() {
 };
   
 const handleUpdateSubmit = async () => {
+  setIsSubmitting(true);
   try {
+    const errors = {};
+    
+    if (!updateToolData.tname) {
+      errors.tname = "Name is required";
+    }
+    if (!updateToolData.tdescription) {
+      errors.tdescription = "Description is required";
+    }
+    if (updateToolData.disasterTool.length === 0) {
+      errors.disasterTool = "Please select at least one disaster";
+    }
+    if (!Array.isArray(updateToolData.timages) || updateToolData.timages.length === 0) {  // <-- Error occurs here
+      errors.timages = "Please select at least one image";
+    }
+    if (Object.keys(errors).length > 0) {
+      setUpdateErrors(errors);
+      setIsSubmitting(false);
+      return; // Stop form submission if there are errors
+    }
+    console.log(updateErrors)
+    
     const config = {
       headers: {
         "Content-Type": "multipart/form-data",
@@ -252,6 +301,8 @@ const handleUpdateSubmit = async () => {
     closeModalUpdate();
   } catch (error) {
     console.error("Error submitting update form:", error);
+  } finally{
+    setIsSubmitting(false);
   }
 };
   
@@ -330,6 +381,12 @@ const availableDisasters = allDisasters.filter(disaster => !updateToolData.disas
                 </p>
               </CardHeader>
               <Modal isOpen={modalOpen} toggle={closeModal} className="modal-lg">
+              <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
                 <ModalHeader toggle={closeModal}>New Tool</ModalHeader>
                 <ModalBody>
                   <Form>
@@ -343,6 +400,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateToolData.disas
                           setNewToolData({ ...newToolData, tname: e.target.value })
                         }
                       />
+                       <Typography> {createErrors.tname && <span className="text-danger">{createErrors.tname}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
                       <Label for="tdescription">Description</Label>
@@ -357,6 +415,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateToolData.disas
                           })
                         }
                       />
+                      <Typography> {createErrors.tdescription && <span className="text-danger">{createErrors.tdescription}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
                       <Label for="images">Images</Label>
@@ -367,6 +426,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateToolData.disas
                         onChange={handleImageChangeCreate}
                         accept="image/*"
                       />
+                      <Typography> {createErrors.timages && <span className="text-danger">{createErrors.timages}</span>}</Typography>
                       {newToolData.imagePreviews &&
                         newToolData.imagePreviews.map((preview, index) => (
                           <img
@@ -383,13 +443,21 @@ const availableDisasters = allDisasters.filter(disaster => !updateToolData.disas
                       onChange={handleSelectChange}
                       isMulti
                     />
+                    <Typography> {createErrors.disasterTool && <span className="text-danger">{createErrors.disasterTool}</span>}</Typography>
                     <Button color="primary" onClick={handleFormSubmit}>
                       Submit
                     </Button>
                   </Form>
                 </ModalBody>
+                </div>
               </Modal>
               <Modal isOpen={updateModalOpen} toggle={closeModalUpdate} className="modal-lg">
+              <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
                 <ModalHeader toggle={closeModalUpdate}>Update Area</ModalHeader>
                 <ModalBody>
                   <Form>
@@ -403,6 +471,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateToolData.disas
                           setUpdateToolData({ ...updateToolData, tname: e.target.value })
                         }
                       />
+                      <Typography> {updateErrors.tname && <span className="text-danger">{updateErrors.tname}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
                       <Label for="tdescription">Description</Label>
@@ -417,6 +486,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateToolData.disas
                           })
                         }
                       />
+                      <Typography> {updateErrors.tdescription && <span className="text-danger">{updateErrors.tdescription}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
                       <Label for="timages">Images</Label>
@@ -427,6 +497,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateToolData.disas
                         onChange={handleImageChangeUpdate}
                         accept="image/*"
                       />
+                      <Typography> {updateErrors.timages && <span className="text-danger">{updateErrors.timages}</span>}</Typography>
                        {
                         updateToolData.timages && updateToolData.timages.length > 0 ? (
                           updateToolData.timages.map((image, index) => (
@@ -448,12 +519,14 @@ const availableDisasters = allDisasters.filter(disaster => !updateToolData.disas
     onChange={handleSelectChangeUpdate}
     isMulti
   />
+  <Typography> {updateErrors.disasterTool && <span className="text-danger">{updateErrors.disasterTool}</span>}</Typography>
 </FormGroup>
                     <Button color="primary" onClick={handleUpdateSubmit}>
                       Update
                     </Button>
                   </Form>
                 </ModalBody>
+                </div>
               </Modal> 
               <CardBody>
                 <Table responsive>
@@ -501,14 +574,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateToolData.disas
                                 Update
                             </Button>
                             </td>
-                            {/* <td>
-                            <Button
-                                color="danger"
-                                onClick={() => handleDeleteClick(row)}
-                            >
-                                Delete
-                            </Button>
-                            </td> */}
+                            
                       </tr>
                     ))}
                   </tbody>

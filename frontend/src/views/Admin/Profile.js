@@ -15,7 +15,7 @@ import {
 } from "reactstrap";
 import { Typography } from "@mui/material";
 import { getToken } from "../../utils/helpers";
-
+import { CircularProgress } from '@mui/material'; 
 function User() {
   const [user, setUser] = useState(null);
   const [formData, setFormData] = useState({
@@ -31,6 +31,7 @@ function User() {
   const [avatarFile, setAvatarFile] = useState(null);
   const [updateErrors, setUpdateErrors] = useState({});
   let navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const getProfile = async () => {
@@ -75,6 +76,7 @@ function User() {
   };
 
   const updateProfile = async (e) => {
+    setIsSubmitting(true);
     e.preventDefault();
     const userId = user._id;
     
@@ -98,6 +100,7 @@ function User() {
     
     if (Object.keys(errors).length > 0) {
       setUpdateErrors(errors);
+      setIsSubmitting(false);
       return; // Stop form submission if there are errors
     }
 
@@ -122,11 +125,19 @@ function User() {
       window.location.reload();
     } catch (error) {
       console.error("Error updating profile:", error);
+    } finally{
+      setIsSubmitting(false);
     }
   };
 
   return (
     <div className="content">
+      <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
       {user && (
         <Row>
            <Col md="4">
@@ -327,6 +338,7 @@ function User() {
           </Col>
         </Row>
       )}
+      </div>
     </div>
   );
 }

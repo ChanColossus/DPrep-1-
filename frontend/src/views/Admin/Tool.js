@@ -25,7 +25,7 @@ import {
   Button,
 } from "reactstrap";
 import { Carousel } from 'react-bootstrap';
-
+import { CircularProgress } from '@mui/material'; 
 function Tool() {
   const [tableData, setTableData] = useState({});
   const [error, setError] = useState(null);
@@ -50,7 +50,7 @@ function Tool() {
   const [allDisasters, setAllDisasters] = useState([]);
   const [createErrors, setCreateErrors] = useState({});
   const [updateErrors, setUpdateErrors] = useState({});
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -135,6 +135,7 @@ function Tool() {
     });
   };
   const handleFormSubmit = async () => {
+    setIsSubmitting(true);
     try {
       const errors = {};
       if (!newToolData.tname) {
@@ -151,6 +152,7 @@ function Tool() {
       }
       if (Object.keys(errors).length > 0) {
         setCreateErrors(errors);
+        setIsSubmitting(false);
         return; // Stop form submission if there are errors
       }
   
@@ -186,6 +188,8 @@ function Tool() {
     } catch (error) {
 
       console.error("Error submitting form:", error);
+    } finally{
+      setIsSubmitting(false);
     }
   };
 
@@ -239,7 +243,7 @@ function Tool() {
 };
   
 const handleUpdateSubmit = async () => {
-  
+  setIsSubmitting(true);
   try {
     const errors = {};
     
@@ -257,6 +261,7 @@ const handleUpdateSubmit = async () => {
     }
     if (Object.keys(errors).length > 0) {
       setUpdateErrors(errors);
+      setIsSubmitting(false);
       return; // Stop form submission if there are errors
     }
     console.log(updateErrors)
@@ -296,6 +301,8 @@ const handleUpdateSubmit = async () => {
     closeModalUpdate();
   } catch (error) {
     console.error("Error submitting update form:", error);
+  } finally{
+    setIsSubmitting(false);
   }
 };
   
@@ -374,6 +381,12 @@ const availableDisasters = allDisasters.filter(disaster => !updateToolData.disas
                 </p>
               </CardHeader>
               <Modal isOpen={modalOpen} toggle={closeModal} className="modal-lg">
+              <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
                 <ModalHeader toggle={closeModal}>New Tool</ModalHeader>
                 <ModalBody>
                   <Form>
@@ -436,8 +449,15 @@ const availableDisasters = allDisasters.filter(disaster => !updateToolData.disas
                     </Button>
                   </Form>
                 </ModalBody>
+                </div>
               </Modal>
               <Modal isOpen={updateModalOpen} toggle={closeModalUpdate} className="modal-lg">
+              <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
                 <ModalHeader toggle={closeModalUpdate}>Update Area</ModalHeader>
                 <ModalBody>
                   <Form>
@@ -506,6 +526,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateToolData.disas
                     </Button>
                   </Form>
                 </ModalBody>
+                </div>
               </Modal> 
               <CardBody>
                 <Table responsive>
