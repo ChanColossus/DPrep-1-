@@ -7,6 +7,7 @@ import { UncontrolledAlert } from "reactstrap";
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import getLPTheme from '../User/getLPTheme';
+import { CircularProgress, Typography } from '@mui/material'; 
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
@@ -17,6 +18,8 @@ const Login = () => {
   const [showCustomTheme, setShowCustomTheme] = useState(true);
   const LPtheme = createTheme(getLPTheme(mode));
   const defaultTheme = createTheme({}); 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [authErrors, setAuthErrors] = useState({});
   const images = [
     "https://i.redd.it/pgr88cjsiku01.png",
     "https://thinkingplay.files.wordpress.com/2015/05/house_fire_with_fire_chief.jpg",
@@ -27,7 +30,7 @@ const Login = () => {
     const interval = setInterval(() => {
       setCurrentImage((prevImage) => (prevImage === images.length - 1 ? 0 : prevImage + 1));
     }, 5000);
-
+    
     return () => clearInterval(interval);
   }, []); 
 
@@ -39,7 +42,22 @@ const Login = () => {
     setShowCustomTheme((prev) => !prev);
   };
   const login = async () => {
+    setIsSubmitting(true);
     try {
+      const errors = {};
+      if (!email) {
+        errors.email = "Email is required";
+      }
+      if (!password) {
+        errors.password = "Password is required";
+      }
+   
+      if (Object.keys(errors).length > 0) {
+        setAuthErrors(errors);
+        setIsSubmitting(false);
+        return; // Stop form submission if there are errors
+      }
+  
       const config = {
         headers: {
           "Content-Type": "application/json",
@@ -60,10 +78,13 @@ const Login = () => {
           setShowAlert(false); // Hide the success alert after a delay
           const role = getUserRole(); // Get the role from session storage
           if (role === 'admin') {
+            setIsSubmitting(false);
             navigate("/admin/dashboard"); // Redirect admin to /admin/dashboard
           } else if (role === 'employee') {
+            setIsSubmitting(false);
             navigate("/employee/dashboard"); // Redirect admin to /admin/dashboard
           } else {
+            setIsSubmitting(false);
             navigate("/home/user"); // Redirect user to /home/user
           }
         }, 3000); // Hide alert after 3 seconds
@@ -75,7 +96,8 @@ const Login = () => {
   };
 
   useEffect(() => {
-    console.log(showAlert); // Log the updated value of showAlert
+    console.log(showAlert); 
+    setAuthErrors({});// Log the updated value of showAlert
   }, [showAlert]);
 
   return (
@@ -118,11 +140,18 @@ const Login = () => {
     <span data-notify="icon" className="nc-icon nc-bell-55" />
     <span data-notify="message">You have successfully logged in. Redirecting please wait...</span>
   </UncontrolledAlert>
-)}
+)} 
 <Form
   style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)", borderRadius: "20px", padding: "30px", background: "white" }}
   onSubmit={(e) => { e.preventDefault(); login(); }}
 >
+<div>
+{isSubmitting && (
+  <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+    <CircularProgress />
+
+  </div>
+)}
   <h1 className="mb-3" style={{ color: "black", fontWeight: "bold", textAlign: "center", fontSize: "2rem" }}>Login</h1>
   <FormGroup>
     <Label for="email_field" style={{ color: "#333333", fontWeight: "bold" }}>Email</Label>
@@ -131,9 +160,11 @@ const Login = () => {
       id="email_field"
       name="email"
       value={email}
-      onChange={(e) => setEmail(e.target.value)}
+      onChange={(e) => setEmail(e.target.value) }
       style={{ fontSize: "1rem" }}
     />
+    <Typography> {authErrors.email && <span className="text-danger">{authErrors.email}</span>}</Typography>
+
   </FormGroup>
   <FormGroup>
     <Label for="password_field" style={{ color: "#333333", fontWeight: "bold" }}>Password</Label>
@@ -145,11 +176,13 @@ const Login = () => {
       onChange={(e) => setPassword(e.target.value)}
       style={{ fontSize: "1rem" }}
     />
+     <Typography> {authErrors.password && <span className="text-danger">{authErrors.password}</span>}</Typography>
   </FormGroup>
   <Button type="submit" style={{ fontWeight: "bold", fontSize: "1rem", color: "white", backgroundColor: "black", marginBottom: "20px" }}>LOGIN</Button>
   <div style={{ display: "flex", flexDirection: "column" }}>
     {/* <Link to="/password/forgot" style={{ color: "#333333", fontWeight: "bold", fontSize: "0.8rem" }}>Forgot Password?</Link> */}
     <Link to="/auth/register" style={{ color: "#333333", fontWeight: "bold", fontSize: "0.8rem" }}>Register</Link>
+  </div>
   </div>
 </Form>
             </Col>

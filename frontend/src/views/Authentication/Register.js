@@ -2,6 +2,9 @@ import React, { Fragment, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Container, Row, Col, Form, FormGroup, Label, Input, Button } from 'reactstrap';
+import { Typography } from "@mui/material";
+
+import { CircularProgress } from '@mui/material'; 
 
 const Register = () => {
   const navigate = useNavigate();
@@ -13,9 +16,48 @@ const Register = () => {
   const [gender, setGender] = useState("");
   const [work, setWork] = useState("");
   const [avatar, setAvatar] = useState(null);
+  const [createErrors, setCreateErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
 
   const register = async () => {
+    setIsSubmitting(true);
     try {
+      const errors = {};
+      if (!name) {
+        errors.name = "Name is required";
+      }
+      
+      if (!email) {
+        errors.email = "Email is required";
+      }
+      if (!password) {
+        errors.password = "Password is required";
+      }
+      if (!contact) {
+        errors.contact = "Contact is required";
+      }
+      if (!age) {
+        errors.age = "Age is required";
+      }
+      if (!work) {
+        errors.work = "Work is required";
+      }
+      if (!gender) {
+        errors.gender = "Gender is required";
+      }
+     
+      if (!Array.isArray(avatar) || avatar.length === 0) {  // <-- Error occurs here
+        errors.avatar = "Please select an image";
+      }
+      if (Object.keys(errors).length > 0) {
+       
+        setCreateErrors(errors);
+        console.log(createErrors)
+        setIsSubmitting(false);
+
+        return; // Stop form submission if there are errors
+      }
       const formData = new FormData();
       formData.append("name", name);
       formData.append("email", email);
@@ -39,10 +81,12 @@ const Register = () => {
       );
       console.log(data);
       // Redirect to the desired URL after successful registration
+      setIsSubmitting(false);
+      setCreateErrors({});
       navigate("/auth/login");
     } catch (error) {
       console.error("Error registering user", error);
-    }
+    } 
   };
 
   const handleAvatarChange = (e) => {
@@ -55,7 +99,14 @@ const Register = () => {
         <Container className="container-fluid" style={{ paddingTop: "0px" }}>
         <Row className="justify-content-center">
   <Col md="6">
+  <div>
+    {isSubmitting && (
+      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+        <CircularProgress />
+      </div>
+    )}
     <Form style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)", borderRadius: "20px", padding: "30px", background: "white" }}>
+      
       <h1 className="mb-3" style={{ color: "black", fontWeight: "bold", textAlign: "center", fontSize: "2rem" }}>Register</h1>
       <Row>
         <Col md="6">
@@ -69,6 +120,7 @@ const Register = () => {
               onChange={(e) => setName(e.target.value)}
               style={{ fontSize: "1rem" }}
             />
+             <Typography> {createErrors.name && <span className="text-danger">{createErrors.name}</span>}</Typography>
           </FormGroup>
         </Col>
         <Col md="6">
@@ -82,6 +134,7 @@ const Register = () => {
               onChange={(e) => setEmail(e.target.value)}
               style={{ fontSize: "1rem" }}
             />
+             <Typography> {createErrors.email && <span className="text-danger">{createErrors.email}</span>}</Typography>
           </FormGroup>
         </Col>
       </Row>
@@ -97,6 +150,7 @@ const Register = () => {
               onChange={(e) => setPassword(e.target.value)}
               style={{ fontSize: "1rem" }}
             />
+             <Typography> {createErrors.password && <span className="text-danger">{createErrors.password}</span>}</Typography>
           </FormGroup>
         </Col>
         <Col md="6">
@@ -110,6 +164,7 @@ const Register = () => {
               onChange={(e) => setContact(e.target.value)}
               style={{ fontSize: "1rem" }}
             />
+             <Typography> {createErrors.contact && <span className="text-danger">{createErrors.contact}</span>}</Typography>
           </FormGroup>
         </Col>
       </Row>
@@ -125,6 +180,7 @@ const Register = () => {
               onChange={(e) => setAge(e.target.value)}
               style={{ fontSize: "1rem" }}
             />
+             <Typography> {createErrors.age && <span className="text-danger">{createErrors.age}</span>}</Typography>
           </FormGroup>
         </Col>
         <Col md="6">
@@ -143,6 +199,7 @@ const Register = () => {
               <option value="Female">Female</option>
               <option value="Rather not say">Rather not say</option>
             </Input>
+            <Typography> {createErrors.gender && <span className="text-danger">{createErrors.gender}</span>}</Typography>
           </FormGroup>
         </Col>
       </Row>
@@ -163,6 +220,7 @@ const Register = () => {
               <option value="Teacher">Teacher</option>
               <option value="Others">Others</option>
             </Input>
+            <Typography> {createErrors.work && <span className="text-danger">{createErrors.work}</span>}</Typography>
           </FormGroup>
         </Col>
         <Col md="6">
@@ -176,6 +234,7 @@ const Register = () => {
               onChange={handleAvatarChange}
               style={{ fontSize: "1rem" }}
             />
+             <Typography> {createErrors.avatar && <span className="text-danger">{createErrors.avatar}</span>}</Typography>
           </FormGroup>
         </Col>
       </Row>
@@ -184,6 +243,7 @@ const Register = () => {
         <Link to="/auth/login" style={{ color: "#333333", fontWeight: "bold", fontSize: "0.8rem" }}>Already have an account? Login</Link>
       </div>
     </Form>
+    </div>
   </Col>
 </Row>
         </Container>
