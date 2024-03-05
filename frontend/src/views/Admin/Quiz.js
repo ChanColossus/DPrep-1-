@@ -6,6 +6,7 @@ import { getToken } from "../../utils/helpers";
 import Select from 'react-select';
 import QuizModal from "./QuizModal";
 import axios from "axios";
+import { Typography } from "@mui/material";
 import {
   Card,
   CardHeader,
@@ -48,6 +49,8 @@ function Quiz() {
     QandA: []
   });
   const [allDisasters, setAllDisasters] = useState([]);
+  const [createErrors, setCreateErrors] = useState({});
+  const [updateErrors, setUpdateErrors] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -121,6 +124,7 @@ function Quiz() {
   };
   const closeModal = () => {
     setModalOpen(false);
+    setCreateErrors({});
     setNewQuizData({
         qname: "",
         qtopic: "",
@@ -131,6 +135,25 @@ function Quiz() {
 
   const handleFormSubmit = async () => {
     try {
+      const errors = {};
+      if (!newQuizData.qname) {
+        errors.qname = "Name is required";
+      }
+      if (!newQuizData.qtopic) {
+        errors.qtopic = "Topic is required";
+      }
+      if (newQuizData.disasterProne.length === 0) {
+        errors.disasterProne = "Please select at least one disaster";
+      }
+      if (!Array.isArray(newQuizData.QandA) || newQuizData.QandA.length === 0) {
+        errors.QandA = "Please insert at least one question and answer";
+      } 
+     
+      if (Object.keys(errors).length > 0) {
+        setCreateErrors(errors);
+        return; // Stop form submission if there are errors
+      }
+  
       const config = {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -171,6 +194,8 @@ function Quiz() {
     const { name, value } = e.target;
     const newQandA = [...newQuizData.QandA];
     newQandA[index][name] = value;
+
+    
     setNewQuizData({ ...newQuizData, QandA: newQandA });
   };
 
@@ -206,6 +231,7 @@ const handleUpdateClick = async (row) => {
     }
   };
     const closeModalUpdate = () => {
+      setUpdateErrors({});
     setUpdateModalOpen(false);
   };
   const handleQuestionChange = (index, e) => {
@@ -241,6 +267,25 @@ const handleUpdateClick = async (row) => {
   
   const handleUpdateSubmit = async () => {
     try {
+      const errors = {};
+      if (!updateQuizData.qname) {
+        errors.qname = "Name is required";
+      }
+      if (!updateQuizData.qtopic) {
+        errors.qtopic = "Topic is required";
+      }
+      if (updateQuizData.disasterProne.length === 0) {
+        errors.disasterProne = "Please select at least one disaster";
+      }
+      if (!Array.isArray(updateQuizData.QandA) || updateQuizData.QandA.length === 0) {
+        errors.QandA = "Please insert at least one question and answer";
+      } 
+     
+      if (Object.keys(errors).length > 0) {
+        setUpdateErrors(errors);
+        return; // Stop form submission if there are errors
+      }
+  
       const config = {
         headers: {
           "Content-Type": "application/json",
@@ -363,6 +408,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateQuizData.disas
                           setNewQuizData({ ...newQuizData, qname: e.target.value })
                         }
                       />
+                       <Typography> {createErrors.qname && <span className="text-danger">{createErrors.qname}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
                       <Label for="qtopic">Topic</Label>
@@ -377,6 +423,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateQuizData.disas
                           })
                         }
                       />
+                      <Typography> {createErrors.qtopic && <span className="text-danger">{createErrors.qtopic}</span>}</Typography>
                     </FormGroup>
                     <Select
                       options={Array.isArray(disasters) ? disasters.map(disaster => ({ value: disaster.name, label: disaster.name })) : []}
@@ -384,6 +431,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateQuizData.disas
                       onChange={handleSelectChange}
                       isMulti
                     />
+                    <Typography> {createErrors.disasterProne && <span className="text-danger">{createErrors.disasterProne}</span>}</Typography>
                      {newQuizData.QandA.map((qna, index) => (
             <div key={index}>
               <FormGroup>
@@ -395,6 +443,9 @@ const availableDisasters = allDisasters.filter(disaster => !updateQuizData.disas
                   value={qna.question}
                   onChange={(e) => handleInputChange(index, e)}
                 />
+             {createErrors.QandA && createErrors.QandA[index] && (
+        <Typography color="error">{createErrors.QandA[index].question}</Typography>
+      )} 
               </FormGroup>
               <FormGroup>
                 <Label for={`answer-${index}`}>Answer</Label>
@@ -405,10 +456,15 @@ const availableDisasters = allDisasters.filter(disaster => !updateQuizData.disas
                   value={qna.answer}
                   onChange={(e) => handleInputChange(index, e)}
                 />
+                  {createErrors.QandA && createErrors.QandA[index] && (
+        <Typography color="error">{createErrors.QandA[index].answer}</Typography>
+      )}
               </FormGroup>
+              
               <Button color="danger" onClick={() => handleRemoveQuestion(index)}>Remove</Button>
             </div>
           ))}
+          <Typography> {createErrors.QandA && <span className="text-danger">{createErrors.QandA}</span>}</Typography>
           <Button color="primary" onClick={handleAddQuestion}>Add Question</Button>
                     <Button color="primary" onClick={handleFormSubmit}>
                       Submit
@@ -430,6 +486,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateQuizData.disas
             setUpdateQuizData({ ...updateQuizData, qname: e.target.value })
           }
         />
+        <Typography> {updateErrors.qname && <span className="text-danger">{updateErrors.qname}</span>}</Typography>
       </FormGroup>
       <FormGroup>
         <Label for="qtopic">Topic</Label>
@@ -444,6 +501,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateQuizData.disas
             })
           }
         />
+           <Typography> {updateErrors.qtopic && <span className="text-danger">{updateErrors.qtopic}</span>}</Typography>
       </FormGroup>
       <FormGroup>
         <Label for="updateDisasters">Disasters</Label>
@@ -453,6 +511,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateQuizData.disas
           onChange={handleSelectChangeUpdate}
           isMulti
         />
+           <Typography> {updateErrors.disasterProne && <span className="text-danger">{updateErrors.disasterProne}</span>}</Typography>
       </FormGroup>
       {/* Field for questions and answers */}
       {updateQuizData.QandA.map((qa, index) => (
@@ -479,6 +538,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateQuizData.disas
           <Button color="danger" onClick={() => handleRemoveQuestionUpdate(index)}>Remove Question</Button>
         </div>
       ))}
+         <Typography> {updateErrors.QandA && <span className="text-danger">{updateErrors.QandA}</span>}</Typography>
       {/* Button to add new question */}
       <Button color="primary" onClick={handleAddQuestionUpdate}>Add Question</Button>
       <Button color="primary" onClick={handleUpdateSubmit}>Update</Button>

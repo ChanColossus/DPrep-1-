@@ -96,12 +96,6 @@ function User() {
       errors.work = "Work is required";
     }
     
-    
-    
-    
-    if (!Array.isArray(updatedData.avatar) || updatedData.avatar.length === 0) {  // <-- Error occurs here
-      errors.avatar = "Please select at least one image";
-    }
     if (Object.keys(errors).length > 0) {
       setUpdateErrors(errors);
       return; // Stop form submission if there are errors
