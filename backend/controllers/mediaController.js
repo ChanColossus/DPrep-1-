@@ -155,7 +155,7 @@ exports.updateMedia = async (req, res, next) => {
             let videoLinks = [];
             // Upload new images to cloudinary
             for (let i = 0; i < req.body.mvideo.length; i++) {
-                const result = await cloudinary.v2.uploader.upload(
+                const result = await cloudinary.uploader.upload(
                     req.body.mvideo[i],
                     {
                         folder: "media",
