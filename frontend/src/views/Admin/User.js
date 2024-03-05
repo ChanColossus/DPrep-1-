@@ -22,6 +22,7 @@ import {
   Input,
   Button,
 } from "reactstrap";
+import { Typography } from "@mui/material";
 import { Carousel } from 'react-bootstrap';
 
 function User() {
@@ -42,7 +43,7 @@ function User() {
   const [dataRefresh, setDataRefresh] = useState(true);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [updateId, setUpdateId] = useState(null);
-
+  const [createErrors, setCreateErrors] = useState({});
   useEffect(() => {
     if (dataRefresh) {
       // Fetch data again
@@ -108,6 +109,7 @@ function User() {
     });
   };
   const closeModal = () => {
+    setCreateErrors({});
     setModalOpen(false);
   };
   const handleImageChangeCreate = (e) => {
@@ -120,6 +122,41 @@ function User() {
   };
   const handleFormSubmit = async () => {
     try {
+      const errors = {};
+      if (!newUserData.name) {
+        errors.name = "Name is required";
+      }
+      if (!newUserData.email) {
+        errors.email = "Email is required";
+      }
+      if (!newUserData.password) {
+        errors.password = "Password is required";
+      }
+      if (!newUserData.contact) {
+        errors.contact = "Contact is required";
+      }
+      if (!newUserData.age) {
+        errors.age = "Age is required";
+      }
+      if (!newUserData.work) {
+        errors.work = "Work is required";
+      }
+      if (!newUserData.gender) {
+        errors.gender = "Gender is required";
+      }
+      if (!newUserData.role) {
+        errors.role = "Role is required";
+      }
+      if (!Array.isArray(newUserData.avatar) || newUserData.avatar.length === 0) {  // <-- Error occurs here
+        errors.avatar = "Please select an image";
+      }
+      if (Object.keys(errors).length > 0) {
+        setCreateErrors(errors);
+        return; // Stop form submission if there are errors
+      }
+  
+      
+  
       const config = {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -263,6 +300,7 @@ function User() {
                           setNewUserData({ ...newUserData, name: e.target.value })
                         }
                       />
+                       <Typography> {createErrors.name && <span className="text-danger">{createErrors.name}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
                       <Label for="email">Email</Label>
@@ -277,6 +315,7 @@ function User() {
                           })
                         }
                       />
+                       <Typography> {createErrors.email && <span className="text-danger">{createErrors.email}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
                       <Label for="password">Password</Label>
@@ -291,6 +330,7 @@ function User() {
                           })
                         }
                       />
+                       <Typography> {createErrors.password && <span className="text-danger">{createErrors.password}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
                       <Label for="contact">Contact</Label>
@@ -305,6 +345,7 @@ function User() {
                           })
                         }
                       />
+                       <Typography> {createErrors.contact && <span className="text-danger">{createErrors.contact}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
                       <Label for="age">Age</Label>
@@ -319,6 +360,7 @@ function User() {
                           })
                         }
                       />
+                       <Typography> {createErrors.age && <span className="text-danger">{createErrors.age}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
   <label>Gender</label>
@@ -333,6 +375,7 @@ function User() {
     <option value="Female">Female</option>
     <option value="Rather Not Say">Rather Not Say</option>
   </Input>
+  <Typography> {createErrors.gender && <span className="text-danger">{createErrors.gender}</span>}</Typography>
 </FormGroup>
 <FormGroup>
   <label>Work</label>
@@ -347,6 +390,7 @@ function User() {
     <option value="Teacher">Teacher</option>
     <option value="Others">Others</option>
   </Input>
+  <Typography> {createErrors.work && <span className="text-danger">{createErrors.work}</span>}</Typography>
 </FormGroup>
 <FormGroup>
   <label>Role</label>
@@ -361,6 +405,7 @@ function User() {
     <option value="employee">Employee</option>
     <option value="user">User</option>
   </Input>
+  <Typography> {createErrors.role && <span className="text-danger">{createErrors.role}</span>}</Typography>
 </FormGroup>
                     <FormGroup>
                       <Label for="avatar">Avatar</Label>
@@ -371,6 +416,7 @@ function User() {
                         onChange={handleImageChangeCreate}
                         accept="image/*"
                       />
+                       <Typography> {createErrors.avatar && <span className="text-danger">{createErrors.avatar}</span>}</Typography>
                       {newUserData.imagePreviews &&
                         newUserData.imagePreviews.map((preview, index) => (
                           <img
