@@ -4,6 +4,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { getToken } from "../../utils/helpers";
 import axios from "axios";
+import { Typography } from "@mui/material";
 import {
   Card,
   CardHeader,
@@ -36,6 +37,8 @@ function Disaster() {
   const [dataRefresh, setDataRefresh] = useState(true);
   const [updateModalOpen, setUpdateModalOpen] = useState(false);
   const [updateId, setUpdateId] = useState(null);
+  const [createErrors, setCreateErrors] = useState({}); // State to hold create form validation errors
+  const [updateErrors, setUpdateErrors] = useState({});
 
   useEffect(() => {
     if (dataRefresh) {
@@ -96,6 +99,7 @@ function Disaster() {
     });
   };
   const closeModal = () => {
+    setCreateErrors({});
     setModalOpen(false);
   };
   const handleImageChangeCreate = (e) => {
@@ -108,6 +112,22 @@ function Disaster() {
   };
   const handleFormSubmit = async () => {
     try {
+        // Basic form validation
+        const errors = {};
+        if (!newDisasterData.name) {
+          errors.name = "Name is required";
+        }
+        if (!newDisasterData.description) {
+          errors.description = "Description is required";
+        }
+        if (!Array.isArray(newDisasterData.images) || newDisasterData.images.length === 0) {  // <-- Error occurs here
+          errors.images = "Please select at least one image";
+        }
+        if (Object.keys(errors).length > 0) {
+          setCreateErrors(errors);
+          return; // Stop form submission if there are errors
+        }
+    
       const config = {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -159,6 +179,7 @@ function Disaster() {
     }
   };
   const closeUpdateModal = () => {
+    setUpdateErrors({})
     setUpdateModalOpen(false);
     setUpdateId(null);
   };
@@ -167,6 +188,20 @@ function Disaster() {
   };
   const handleUpdateSubmit = async () => {
     try {
+      const errors = {};
+      if (!newDisasterData.name) {
+        errors.name = "Name is required";
+      }
+      if (!newDisasterData.description) {
+        errors.description = "Description is required";
+      }
+      if (!Array.isArray(newDisasterData.images) || newDisasterData.images.length === 0) {  // <-- Error occurs here
+        errors.images = "Please select at least one image";
+      }
+      if (Object.keys(errors).length > 0) {
+        setUpdateErrors(errors);
+        return; // Stop form submission if there are errors
+      }
       const config = {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -277,6 +312,7 @@ function Disaster() {
                           setNewDisasterData({ ...newDisasterData, name: e.target.value })
                         }
                       />
+                      <Typography> {createErrors.name && <span className="text-danger">{createErrors.name}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
                       <Label for="description">Description</Label>
@@ -291,6 +327,7 @@ function Disaster() {
                           })
                         }
                       />
+                      <Typography> {createErrors.description && <span className="text-danger">{createErrors.description}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
                       <Label for="images">Images</Label>
@@ -301,6 +338,7 @@ function Disaster() {
                         onChange={handleImageChangeCreate}
                         accept="image/*"
                       />
+                      <Typography> {createErrors.images && <span className="text-danger">{createErrors.images}</span>}</Typography>
                       {newDisasterData.imagePreviews &&
                         newDisasterData.imagePreviews.map((preview, index) => (
                           <img
@@ -332,6 +370,7 @@ function Disaster() {
                           setNewDisasterData({ ...newDisasterData, name: e.target.value })
                         }
                       />
+                       <Typography> {updateErrors.name && <span className="text-danger">{updateErrors.name}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
                       <Label for="description">Description</Label>
@@ -346,6 +385,7 @@ function Disaster() {
                           })
                         }
                       />
+                      <Typography> {updateErrors.description && <span className="text-danger">{updateErrors.description}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
                       <Label for="images">Images</Label>
@@ -356,6 +396,7 @@ function Disaster() {
                         onChange={handleImageChange}
                         accept="image/*"
                       />
+                      <Typography> {updateErrors.images && <span className="text-danger">{updateErrors.images}</span>}</Typography>
                       {
                         newDisasterData.images && newDisasterData.images.length > 0 ? (
                           newDisasterData.images.map((image, index) => (
