@@ -61,6 +61,7 @@ const Login = () => {
       // Authenticate user and redirect to dashboard on successful login
       authenticate(data, () => {
         setShowAlert(true);
+        setAuthErrors({});
         // Show the success alert
         setTimeout(() => {
           setShowAlert(false); // Hide the success alert after a delay
@@ -79,6 +80,10 @@ const Login = () => {
       });
     } catch (error) {
       console.error("Invalid user or password", error);
+      const errors = {};
+      errors.auth = "Invalid username or password";
+      setAuthErrors(errors);
+      setIsSubmitting(false);
       // Handle login error (e.g., show error message)
     }
   };
@@ -104,6 +109,13 @@ const Login = () => {
             {/* Right Column */}
             <Col md="6" style={{ background: 'linear-gradient(to right, black, #4e79a7)' }}>
               <div className="login-form-wrapper">
+              <div style={{ textAlign: 'center' }}>
+      <img
+        src={logonamin} // Replace this URL with the URL of your image
+        alt="Image above form"
+        style={{ width: "50%", height: "auto" }}
+      />
+    </div>
                 {showAlert && (
                   <UncontrolledAlert
                     className="alert-with-icon"
@@ -117,13 +129,7 @@ const Login = () => {
                 )} 
           
              
-                <div style={{ textAlign: 'center' }}>
-      <img
-        src={logonamin} // Replace this URL with the URL of your image
-        alt="Image above form"
-        style={{ width: "50%", height: "auto" }}
-      />
-    </div>
+               
     
                
                 
@@ -162,6 +168,7 @@ const Login = () => {
                       />
                       <Typography> {authErrors.password && <span className="text-danger">{authErrors.password}</span>}</Typography>
                     </FormGroup>
+                    <Typography> {authErrors.auth && <span className="text-danger">{authErrors.auth}</span>}</Typography>
                     <Button type="submit" style={{ fontWeight: "bold", fontSize: "1rem", color: "white", backgroundColor: "black", marginBottom: "20px" }}>LOGIN</Button>
                     <div style={{ display: "flex", flexDirection: "column" }}>
                       {/* <Link to="/password/forgot" style={{ color: "#333333", fontWeight: "bold", fontSize: "0.8rem" }}>Forgot Password?</Link> */}

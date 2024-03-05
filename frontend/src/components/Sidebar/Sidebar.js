@@ -23,7 +23,7 @@ import { Nav } from "reactstrap";
 import PerfectScrollbar from "perfect-scrollbar";
 
 import logo from "logo.svg";
-import logonamin from "logonamin.png"
+import logonamin from "Dpreplogo.png"
 var ps;
 
 function Sidebar(props) {
@@ -54,11 +54,11 @@ function Sidebar(props) {
     >
       <div className="logo">
         <a
-          href="http://localhost:3000/admin/dashboard"
+          href=""
           className="simple-text logo-mini"
         >
           <div className="logo-img">
-            <img src={logonamin} alt="react-logo" />
+            <img src={logonamin} alt="react-logo"  style={{width:"100%"}}/>
           </div>
         </a>
         <a

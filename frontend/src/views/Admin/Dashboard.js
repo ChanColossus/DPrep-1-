@@ -4,7 +4,7 @@ import { Card, CardHeader, CardBody, CardFooter, CardTitle, Row, Col, Button } f
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Line, Bar } from "react-chartjs-2";
-
+import logonamin from "Dpreplogo.png"
 function Dashboard() {
   // Dummy data for demonstration
   const [disasters, setDisasters] = useState([]);
@@ -114,7 +114,15 @@ function Dashboard() {
 
   return (
     <div className="content">
+      <div style={{ textAlign: 'center' }}>
+      <img
+        src={logonamin} // Replace this URL with the URL of your image
+        alt="Image above form"
+        style={{ width: "10%", height: "auto" }}
+      />
+    </div>
       <Row>
+      
         {/* Card for current year reports */}
         <Col lg="3" md="6" sm="6">
           <Card className="card-stats">
