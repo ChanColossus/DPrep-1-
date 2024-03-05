@@ -1,6 +1,6 @@
 const Media = require('../models/media');
 const Disaster = require("../models/disaster");
-const cloudinary = require("cloudinary");
+const cloudinary = require("cloudinary").v2;
 const APIFeatures = require("../utils/apiFeatures");
 exports.newMedia = async (req, res, next) => {
     const { mname, disasterNames } = req.body;
@@ -27,16 +27,19 @@ exports.newMedia = async (req, res, next) => {
         // Handle single file upload
         const mvideo = req.file;
 
+      
+
         if (!mvideo) {
             return res.status(400).json({ error: 'No video file uploaded' });
         }
-
+        console.log(mvideo)
         try {
             const result = await cloudinary.uploader.upload(mvideo.path, {
+                resource_type: 'video',
                 folder: 'media',
-                resource_type: 'video'
+             
             });
-
+           
             // Ensure that the expected properties are present in the result
             if (result && result.public_id && result.secure_url) {
                 // Create the Media document with Cloudinary upload result

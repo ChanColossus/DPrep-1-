@@ -4,7 +4,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { getToken } from "../../utils/helpers";
 import Select from 'react-select';
-import { Video } from '@mui/material';
+import { Video,Typography } from '@mui/material';
 import axios from "axios";
 import {
   Card,
@@ -46,6 +46,8 @@ function Infographic() {
     disasterProne: []
   });
   const [allDisasters, setAllDisasters] = useState([]);
+  const [createErrors, setCreateErrors] = useState({});
+  const [updateErrors, setUpdateErrors] = useState({});
 
   useEffect(() => {
     const fetchData = async () => {
@@ -117,6 +119,7 @@ function Infographic() {
     }
   };
   const closeModal = () => {
+    setCreateErrors({});
     setModalOpen(false);
   };
   const handleVideoChangeCreate = (e) => {
@@ -130,6 +133,21 @@ function Infographic() {
   
   const handleFormSubmit = async () => {
     try {
+      const errors = {};
+      if (!newMediaData.mname) {
+        errors.mname = "Name is required";
+      }
+      if (newMediaData.disasterProne.length === 0) {
+        errors.disasterProne = "Please select at least one disaster";
+      }
+      if (!Array.isArray(newMediaData.mvideo) || newMediaData.mvideo.length === 0) {  // <-- Error occurs here
+        errors.mvideo = "Please select at least one video";
+      }
+      if (Object.keys(errors).length > 0) {
+        setCreateErrors(errors);
+        return; // Stop form submission if there are errors
+      }
+  
       const config = {
         headers: {
           "Content-Type": "multipart/form-data",
@@ -184,6 +202,7 @@ function Infographic() {
   };
   
   const closeModalUpdate = () => {
+    setUpdateErrors({})
     setUpdateModalOpen(false);
   };
   
@@ -218,6 +237,20 @@ const handleVideoChangeUpdate = (e) => {
   
   // Updated handleUpdateSubmit function
   const handleUpdateSubmit = async () => {
+    const errors = {};
+    if (!updateMediaData.mname) {
+      errors.mname = "Name is required";
+    }
+    if (updateMediaData.disasterProne.length === 0) {
+      errors.disasterProne = "Please select at least one disaster";
+    }
+    if (!Array.isArray(updateMediaData.mvideo) || updateMediaData.mvideo.length === 0) {  // <-- Error occurs here
+      errors.mvideo = "Please select at least one video";
+    }
+    if (Object.keys(errors).length > 0) {
+      setUpdateErrors(errors);
+      return; // Stop form submission if there are errors
+    }
     try {
       const formData = new FormData();
       formData.append("mname", updateMediaData.mname);
@@ -335,12 +368,14 @@ const availableDisasters = allDisasters.filter(disaster => !updateMediaData.disa
                           setNewMediaData({ ...newMediaData, mname: e.target.value })
                         }
                       />
+                       <Typography> {createErrors.mname && <span className="text-danger">{createErrors.mname}</span>}</Typography>
                     </FormGroup>
                     <FormGroup>
                       <Label for="images">Video</Label>
                       <Input
                        type="file" accept="video/*" onChange={handleVideoChangeCreate} multiple
                       />
+                       <Typography> {createErrors.mvideo && <span className="text-danger">{createErrors.mvideo}</span>}</Typography>
                      {newMediaData.videoPreviews &&
     newMediaData.videoPreviews.map((preview, index) => (
       <video key={index} controls width="100" height="auto">
@@ -355,6 +390,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateMediaData.disa
                       onChange={handleSelectChange}
                       isMulti
                     />
+                     <Typography> {createErrors.disasterProne && <span className="text-danger">{createErrors.disasterProne}</span>}</Typography>
                     <Button color="primary" onClick={handleFormSubmit}>
                       Submit
                     </Button>
@@ -376,6 +412,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateMediaData.disa
                           setUpdateMediaData({ ...updateMediaData, mname: e.target.value })
                         }
                       />
+                      <Typography> {updateErrors.mname && <span className="text-danger">{updateErrors.mname}</span>}</Typography>
                     </FormGroup> 
                     <FormGroup>
   <Label for="mvideo">Video</Label>
@@ -386,6 +423,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateMediaData.disa
     onChange={handleVideoChangeUpdate}
     accept="video/*"
   />
+  <Typography> {updateErrors.mvideo && <span className="text-danger">{updateErrors.mvideo}</span>}</Typography>
   {updateMediaData.videoPreviews && updateMediaData.videoPreviews.length > 0 ? (
     updateMediaData.videoPreviews.map((preview, index) => (
       <div key={index}>
@@ -406,6 +444,7 @@ const availableDisasters = allDisasters.filter(disaster => !updateMediaData.disa
     onChange={handleSelectChangeUpdate}
     isMulti
   />
+  <Typography> {updateErrors.disasterProne && <span className="text-danger">{updateErrors.disasterProne}</span>}</Typography>
 </FormGroup>
                     <Button color="primary" onClick={handleUpdateSubmit}>
                       Update
