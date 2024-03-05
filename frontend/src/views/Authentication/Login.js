@@ -4,22 +4,17 @@ import axios from "axios";
 import { authenticate, getUserRole } from "../../utils/helpers";
 import { Container, Row, Col, Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import { UncontrolledAlert } from "reactstrap";
-import CssBaseline from '@mui/material/CssBaseline';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import getLPTheme from '../User/getLPTheme';
 import { CircularProgress, Typography } from '@mui/material'; 
+import logonamin from "Dpreplogo.png"
 const Login = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showAlert, setShowAlert] = useState(false);
   const [currentImage, setCurrentImage] = useState(0);
-  const [mode, setMode] = useState('dark');
-  const [showCustomTheme, setShowCustomTheme] = useState(true);
-  const LPtheme = createTheme(getLPTheme(mode));
-  const defaultTheme = createTheme({}); 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [authErrors, setAuthErrors] = useState({});
+
   const images = [
     "https://i.redd.it/pgr88cjsiku01.png",
     "https://thinkingplay.files.wordpress.com/2015/05/house_fire_with_fire_chief.jpg",
@@ -32,15 +27,8 @@ const Login = () => {
     }, 5000);
     
     return () => clearInterval(interval);
-  }, []); 
+  }, []);
 
-  const toggleColorMode = () => {
-    setMode((prev) => (prev === 'dark' ? 'light' : 'dark'));
-  };
-
-  const toggleCustomTheme = () => {
-    setShowCustomTheme((prev) => !prev);
-  };
   const login = async () => {
     setIsSubmitting(true);
     try {
@@ -95,16 +83,9 @@ const Login = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(showAlert); 
-    setAuthErrors({});// Log the updated value of showAlert
-  }, [showAlert]);
-
   return (
-  
     <Fragment>
       {/* Show the success alert when isLoggedIn is true */}
-      
       <div className="body" style={{ backgroundColor: "white", display: "flex", alignItems: "center", justifyContent: "center" }}>
         <Container fluid style={{ paddingTop: "0px" }}>
           <Row>
@@ -122,75 +103,78 @@ const Login = () => {
             </Col>
             {/* Right Column */}
             <Col md="6" style={{ background: 'linear-gradient(to right, black, #4e79a7)' }}>
-
-
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-<br/>
-{showAlert && (
-  <UncontrolledAlert
-    className="alert-with-icon"
-    color="info"
-    fade={false}
-    style={{ backgroundColor: "black", color: "white" }}
-  >
-    <span data-notify="icon" className="nc-icon nc-bell-55" />
-    <span data-notify="message">You have successfully logged in. Redirecting please wait...</span>
-  </UncontrolledAlert>
-)} 
-<Form
-  style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)", borderRadius: "20px", padding: "30px", background: "white" }}
-  onSubmit={(e) => { e.preventDefault(); login(); }}
->
-<div>
-{isSubmitting && (
-  <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
-    <CircularProgress />
-
-  </div>
-)}
-  <h1 className="mb-3" style={{ color: "black", fontWeight: "bold", textAlign: "center", fontSize: "2rem" }}>Login</h1>
-  <FormGroup>
-    <Label for="email_field" style={{ color: "#333333", fontWeight: "bold" }}>Email</Label>
-    <Input
-      type="email"
-      id="email_field"
-      name="email"
-      value={email}
-      onChange={(e) => setEmail(e.target.value) }
-      style={{ fontSize: "1rem" }}
-    />
-    <Typography> {authErrors.email && <span className="text-danger">{authErrors.email}</span>}</Typography>
-
-  </FormGroup>
-  <FormGroup>
-    <Label for="password_field" style={{ color: "#333333", fontWeight: "bold" }}>Password</Label>
-    <Input
-      type="password"
-      id="password_field"
-      name="password"
-      value={password}
-      onChange={(e) => setPassword(e.target.value)}
-      style={{ fontSize: "1rem" }}
-    />
-     <Typography> {authErrors.password && <span className="text-danger">{authErrors.password}</span>}</Typography>
-  </FormGroup>
-  <Button type="submit" style={{ fontWeight: "bold", fontSize: "1rem", color: "white", backgroundColor: "black", marginBottom: "20px" }}>LOGIN</Button>
-  <div style={{ display: "flex", flexDirection: "column" }}>
-    {/* <Link to="/password/forgot" style={{ color: "#333333", fontWeight: "bold", fontSize: "0.8rem" }}>Forgot Password?</Link> */}
-    <Link to="/auth/register" style={{ color: "#333333", fontWeight: "bold", fontSize: "0.8rem" }}>Register</Link>
-  </div>
-  </div>
-</Form>
+              <div className="login-form-wrapper">
+                {showAlert && (
+                  <UncontrolledAlert
+                    className="alert-with-icon"
+                    color="info"
+                    fade={false}
+                    style={{ backgroundColor: "black", color: "white" }}
+                  >
+                    <span data-notify="icon" className="nc-icon nc-bell-55" />
+                    <span data-notify="message">You have successfully logged in. Redirecting please wait...</span>
+                  </UncontrolledAlert>
+                )} 
+          
+             
+                <div style={{ textAlign: 'center' }}>
+      <img
+        src={logonamin} // Replace this URL with the URL of your image
+        alt="Image above form"
+        style={{ width: "50%", height: "auto" }}
+      />
+    </div>
+    
+               
+                
+                <Form
+                  style={{ boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)", borderRadius: "20px", padding: "30px", background: "white" }}
+                  onSubmit={(e) => { e.preventDefault(); login(); }}
+                >
+                  <div>
+                    {isSubmitting && (
+                      <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', zIndex: 9999 }}>
+                        <CircularProgress />
+                      </div>
+                    )}
+                    <h1 className="mb-3" style={{ color: "black", fontWeight: "bold", textAlign: "center", fontSize: "2rem" }}>Login</h1>
+                    <FormGroup>
+                      <Label for="email_field" style={{ color: "#333333", fontWeight: "bold" }}>Email</Label>
+                      <Input
+                        type="email"
+                        id="email_field"
+                        name="email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value) }
+                        style={{ fontSize: "1rem" }}
+                      />
+                      <Typography> {authErrors.email && <span className="text-danger">{authErrors.email}</span>}</Typography>
+                    </FormGroup>
+                    <FormGroup>
+                      <Label for="password_field" style={{ color: "#333333", fontWeight: "bold" }}>Password</Label>
+                      <Input
+                        type="password"
+                        id="password_field"
+                        name="password"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        style={{ fontSize: "1rem" }}
+                      />
+                      <Typography> {authErrors.password && <span className="text-danger">{authErrors.password}</span>}</Typography>
+                    </FormGroup>
+                    <Button type="submit" style={{ fontWeight: "bold", fontSize: "1rem", color: "white", backgroundColor: "black", marginBottom: "20px" }}>LOGIN</Button>
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                      {/* <Link to="/password/forgot" style={{ color: "#333333", fontWeight: "bold", fontSize: "0.8rem" }}>Forgot Password?</Link> */}
+                      <Link to="/auth/register" style={{ color: "#333333", fontWeight: "bold", fontSize: "0.8rem" }}>Register</Link>
+                    </div>
+                  </div>
+                </Form>
+              </div>
             </Col>
           </Row>
         </Container>
       </div>
     </Fragment>
-
   );
 };
 

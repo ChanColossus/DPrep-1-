@@ -170,7 +170,6 @@ console.log(req.body)
     let userDataToUpdate = {
       name: req.body.name,
       email: req.body.email,
-      password: req.body.password,
       contact: req.body.contact,
       age: req.body.age,
       gender: req.body.gender,
