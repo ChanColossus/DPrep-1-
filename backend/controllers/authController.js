@@ -7,7 +7,7 @@ const sendEmail = require("../utils/sendEmail");
 exports.registerUser = async (req, res, next) => {
   console.log(req.body.avatar)
 
-  const result = await cloudinary.v2.uploader.upload(req.file.path, {
+  const result = await cloudinary.uploader.upload(req.file.path, {
     folder: 'avatars',
     width: 150,
     crop: "scale"

@@ -22,6 +22,7 @@ const Register = () => {
 
   const register = async () => {
     setIsSubmitting(true);
+    console.log(avatar)
     try {
       const errors = {};
       if (!name) {
@@ -47,7 +48,7 @@ const Register = () => {
         errors.gender = "Gender is required";
       }
      
-      if (!Array.isArray(avatar) || avatar.length === 0) {  // <-- Error occurs here
+      if (avatar.length === 0) {  // <-- Error occurs here
         errors.avatar = "Please select an image";
       }
       if (Object.keys(errors).length > 0) {
