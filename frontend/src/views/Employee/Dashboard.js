@@ -122,12 +122,13 @@ function Dashboard() {
               <Row>
                 <Col md="4" xs="5">
                   <div className="icon-big text-center icon-warning">
-                    <i className="nc-icon nc-globe text-warning" />
+                    <i className="nc-icon nc-tap-01 text-warning" />
                   </div>
                 </Col>
                 <Col md="8" xs="7">
                   <div className="numbers">
-                    <p className="card-category">Current Year Reports</p>
+                    <p className="card-category">Current</p>
+                    <p className="card-category">Year Reports</p>
                     <CardTitle tag="p">{currentYearReports}</CardTitle>
                     <p />
                   </div>
@@ -149,12 +150,13 @@ function Dashboard() {
               <Row>
                 <Col md="4" xs="5">
                   <div className="icon-big text-center icon-warning">
-                    <i className="nc-icon nc-paper text-success" />
+                  <i className="nc-icon nc-calendar-60 text-success" />
                   </div>
                 </Col>
                 <Col md="8" xs="7">
                   <div className="numbers">
-                    <p className="card-category">Overall Reports</p>
+                    <p className="card-category">Overall</p>
+                    <p className="card-category">Reports</p>
                     <CardTitle tag="p">{overallReports}</CardTitle>
                     <p />
                   </div>
@@ -176,12 +178,13 @@ function Dashboard() {
               <Row>
                 <Col md="4" xs="5">
                   <div className="icon-big text-center icon-warning">
-                    <i className="nc-icon nc-bell-55 text-danger" />
+                  <i className="nc-icon nc-support-17 text-danger" />
                   </div>
                 </Col>
                 <Col md="8" xs="7">
                   <div className="numbers">
-                    <p className="card-category">Number of Disasters</p>
+                    <p className="card-category">Number</p>
+                    <p className="card-category">of Disasters</p>
                     <CardTitle tag="p">{numberOfDisasters}</CardTitle>
                     <p />
                   </div>
@@ -203,12 +206,13 @@ function Dashboard() {
               <Row>
                 <Col md="4" xs="5">
                   <div className="icon-big text-center icon-warning">
-                    <i className="nc-icon nc-diamond text-info" />
+                  <i className="nc-icon nc-pin-3 text-info" />
                   </div>
                 </Col>
                 <Col md="8" xs="7">
                   <div className="numbers">
-                    <p className="card-category">Number of Areas</p>
+                    <p className="card-category">Number</p>
+                    <p className="card-category">of Areas</p>
                     <CardTitle tag="p">{numberOfArea}</CardTitle>
                     <p />
                   </div>
