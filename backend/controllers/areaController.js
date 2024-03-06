@@ -89,21 +89,21 @@ exports.newArea = async (req, res, next) => {
     }
 };
 exports.getArea = async (req, res, next) => {
-    const resPerPage = 4;
-    const areaCount = await Area.countDocuments();
+    // const resPerPage = 4;
+    // const areaCount = await Area.countDocuments();
     const apiFeatures = new APIFeatures(Area.find(), req.query)
         .search()
         .filter();
 
-    apiFeatures.pagination(resPerPage);
+    // apiFeatures.pagination(resPerPage);
     const area = await apiFeatures.query;
-    let filteredAreaCount = area.length;
+    // let filteredAreaCount = area.length;
     res.status(200).json({
         success: true,
-        filteredAreaCount,
-        areaCount,
-        area,
-        resPerPage,
+        // filteredAreaCount,
+        // areaCount,
+      area,
+        // resPerPage,
     });
 };
 exports.updateArea = async (req, res, next) => {
