@@ -144,7 +144,15 @@ const InteractiveTool = () => {
       setDisasterModalOpen(true);
     }, 10000); // 5000 milliseconds = 5 seconds
   };
-
+  const columnCount = 3; // Number of columns to display tools
+  
+  // Calculate how many tools to display per column
+  const toolsPerColumn = Math.ceil(tools.length / columnCount);
+  
+  // Create an array of tool columns
+  const toolColumns = Array.from({ length: columnCount }, (_, columnIndex) =>
+    tools.slice(columnIndex * toolsPerColumn, (columnIndex + 1) * toolsPerColumn)
+  );
   return (
     <>
     <ThemeProvider theme={showCustomTheme ? LPtheme : defaultTheme}>
@@ -203,27 +211,33 @@ const InteractiveTool = () => {
         </Modal>
 
         <Modal open={toolModalOpen} onClose={() => setToolModalOpen(false)} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-          <Box sx={{ width: 400, bgcolor: 'background.paper', p: 2 }}>
-            <Typography variant="h6">Selected Disaster: {selectedDisaster}</Typography>
-            <FormControl component="fieldset">
-              <Typography variant="h5" gutterBottom>Select tools:</Typography>
-              <FormGroup>
-                {tools.map(tool => (
-                  <FormControlLabel
-                    key={tool._id}
-                    control={<Checkbox />}
-                    label={tool.tname}
-                    onChange={() => handleToolChange(tool._id)}
-                    checked={selectedTools.includes(tool._id)}
-                  />
-                ))}
-              </FormGroup>
-            </FormControl>
-            <Box mt={2} textAlign="right">
-              <Button variant="contained" onClick={calculateScore}>Submit</Button>
+      <Box sx={{ bgcolor: 'background.paper', p: 2, maxWidth:410 }}>
+        <Typography variant="h6">Selected Disaster: {selectedDisaster}</Typography>
+        <FormControl component="fieldset">
+          <Typography variant="h5" gutterBottom>Select tools:</Typography>
+          <FormGroup>
+            <Box sx={{ display: 'flex' }}>
+              {toolColumns.map((column, index) => (
+                <Box key={index} sx={{ flex: 1, mr: 2 }}>
+                  {column.map(tool => (
+                    <FormControlLabel
+                      key={tool._id}
+                      control={<Checkbox />}
+                      label={tool.tname}
+                      onChange={() => handleToolChange(tool._id)}
+                      checked={selectedTools.includes(tool._id)}
+                    />
+                  ))}
+                </Box>
+              ))}
             </Box>
-          </Box>
-        </Modal>
+          </FormGroup>
+        </FormControl>
+        <Box mt={2} textAlign="right">
+          <Button variant="contained" onClick={calculateScore}>Submit</Button>
+        </Box>
+      </Box>
+    </Modal>
 
         <Modal open={scoreModalOpen} onClose={handleCloseModals} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
           <Box sx={{ width: 400, bgcolor: 'background.paper', p: 2 }}>
