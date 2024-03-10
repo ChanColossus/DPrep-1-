@@ -362,18 +362,19 @@ function Report() {
                                 <CardTitle tag="h4">Report List  <Button color="primary" className="float-right" onClick={openModal}>
                                     New Report
                                 </Button>
-                                <FormGroup>
-                                    <Label for="selectArea">Select Area:</Label>
+                                
+                                <Button color="success" className="float-right mr-2" onClick={exportToPDF}>
+                                        Export to PDF
+                                    </Button>
+                                    <FormGroup>
+                                    <Label for="selectArea">Select Area to export:</Label>
                                     <Input type="select" name="selectArea" id="selectArea" onChange={(e) => setSelectedArea(e.target.value)}>
                                         <option value="">All Areas</option>
                                         {areas.map(area => (
                                             <option key={area._id} value={area._id}>{area.bname}</option>
                                         ))}
                                     </Input>
-                                </FormGroup>
-                                <Button color="success" className="float-right mr-2" onClick={exportToPDF}>
-                                        Export to PDF
-                                    </Button></CardTitle>
+                                </FormGroup></CardTitle>
                                 <p className="card-category">
                                     Each entry in the list represents a specific disaster report,
                                     detailing crucial information about the incident.
