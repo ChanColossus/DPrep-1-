@@ -12,6 +12,8 @@
     "axios": "^1.6.7",
     "bootstrap": "4.6.2",
     "chart.js": "^3.9.1",
+    "jspdf": "^2.5.1",
+    "jspdf-autotable": "^3.8.2",
     "mdb-react-ui-kit": "^7.2.0",
     "perfect-scrollbar": "1.5.5",
     "pure-react-carousel": "^1.30.1",

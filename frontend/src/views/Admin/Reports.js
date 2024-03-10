@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { getToken } from "../../utils/helpers";
 import axios from "axios";
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 import {
     Card,
     CardHeader,
@@ -47,7 +49,7 @@ function Report() {
     const [areas, setAreas] = useState([]);
     const [createErrors, setCreateErrors] = useState({});
     const [updateErrors, setUpdateErrors] = useState({});
-  
+    const [selectedArea, setSelectedArea] = useState(null); 
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
@@ -323,6 +325,33 @@ function Report() {
           console.error("Error deleting disaster:", error);
         }
       };
+    // Function to export the filtered data to PDF
+    const exportToPDF = () => {
+        const doc = new jsPDF();
+        doc.setFontSize(20);
+        doc.text("Disaster Report", 10, 10);
+
+        const rows = [];
+        dataEntries.forEach(([key, row], index) => {
+            if (!selectedArea || (selectedArea && row.area._id === selectedArea)) {
+                rows.push([
+                    new Date(row.date).toLocaleDateString(),
+                    row.disaster.name,
+                    row.area.bname,
+                    row.affectedPersons,
+                    row.casualties
+                ]);
+            }
+        });
+
+        doc.autoTable({
+            head: [['Date', 'Disaster Type', 'Area Affected', 'No. of Affected', 'No. of Casualties']],
+            body: rows
+        });
+
+        doc.save("disaster_report.pdf");
+    };
+    
     return (
         <>
             <div className="content">
@@ -332,7 +361,19 @@ function Report() {
                             <CardHeader>
                                 <CardTitle tag="h4">Report List  <Button color="primary" className="float-right" onClick={openModal}>
                                     New Report
-                                </Button></CardTitle>
+                                </Button>
+                                <FormGroup>
+                                    <Label for="selectArea">Select Area:</Label>
+                                    <Input type="select" name="selectArea" id="selectArea" onChange={(e) => setSelectedArea(e.target.value)}>
+                                        <option value="">All Areas</option>
+                                        {areas.map(area => (
+                                            <option key={area._id} value={area._id}>{area.bname}</option>
+                                        ))}
+                                    </Input>
+                                </FormGroup>
+                                <Button color="success" className="float-right mr-2" onClick={exportToPDF}>
+                                        Export to PDF
+                                    </Button></CardTitle>
                                 <p className="card-category">
                                     Each entry in the list represents a specific disaster report,
                                     detailing crucial information about the incident.
