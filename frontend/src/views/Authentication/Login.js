@@ -97,7 +97,7 @@ const Login = () => {
             {/* Left Column */}
             <Col md="6" className="p-0">
               {/* Slideshow of disaster pictures */}
-              <div className="slideshow-container" style={{ width: "100%", height: "100%" }}>
+              <div className="slideshow-container" style={{ maxWidth: "100%", height: "100%" }}>
                 <img
                   src={images[currentImage]}
                   alt={`Slide ${currentImage + 1}`}

@@ -23,6 +23,7 @@ import {
 } from "reactstrap";
 import { Typography } from "@mui/material";
 import { CircularProgress } from '@mui/material'; 
+import logo from "Dpreplogo.png"
 function Report() {
     const [tableData, setTableData] = useState({});
     const [error, setError] = useState(null);
@@ -329,8 +330,12 @@ function Report() {
     const exportToPDF = () => {
         const doc = new jsPDF();
         doc.setFontSize(20);
-        doc.text("Disaster Report", 10, 10);
-
+        
+        const imgData = logo;
+        doc.addImage(imgData, 'PNG', 10, 10, 20, 20); // Adjust position and size as needed
+    
+        doc.text("Disaster Report", 10, 30); // Adjust position as needed
+    
         const rows = [];
         dataEntries.forEach(([key, row], index) => {
             if (!selectedArea || (selectedArea && row.area._id === selectedArea)) {
@@ -343,12 +348,14 @@ function Report() {
                 ]);
             }
         });
-
+    
+        // Adjust the y-position to lower the table
         doc.autoTable({
+            startY: 35, // Adjust this value to move the table lower
             head: [['Date', 'Disaster Type', 'Area Affected', 'No. of Affected', 'No. of Casualties']],
             body: rows
         });
-
+    
         doc.save("disaster_report.pdf");
     };
     
