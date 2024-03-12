@@ -18,6 +18,7 @@ const Register = () => {
   const [avatar, setAvatar] = useState(null);
   const [createErrors, setCreateErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
 
 
   const register = async () => {

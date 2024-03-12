@@ -183,8 +183,11 @@ const Quiz = () => {
                             <Typography variant="h4" gutterBottom style={{ textAlign: 'center' }}>{quizData.qname}</Typography>
                             <Box mt={2} p={2} border="1px solid #ccc" borderRadius={5}>
                               <Typography variant="h5" gutterBottom style={{ textAlign: 'center' }}>"{quizData.qtopic}"</Typography>
+                              <Typography variant="h5" gutterBottom style={{ textAlign: 'center' }}>Note: Answer the quiz with True or False</Typography>
+                              <br/>
                               {quizData.QandA.map((question, index) => (
                                 <div key={index}>
+
                                   <Typography variant="h5">{question.question}</Typography>
                                   <Input
                                     type="text"
